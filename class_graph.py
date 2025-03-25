@@ -17,6 +17,9 @@ class _Vertex:
     """
     item: Any
     neighbours: set[_Vertex]
+    links_in: set[_Vertex]
+    links_out: set[_Vertex]
+    engagement: float
 
     def __init__(self, item: Any, neighbours: set[_Vertex]) -> None:
         """Initialize a new vertex with the given item and neighbours."""
@@ -129,7 +132,23 @@ class _Vertex:
                     if u.check_connected_distance(target_item, visited.union({self}), d - 1):
                         return True
             return False
-
+        
+    def check_directed_connected(self, target_item: Any, visited: list[_Vertex] = []) -> Optional[list[_Vertex]]:
+        """Check whether self is connected to the vertex containing target_item, 
+        avoiding vertices in visited; 
+        i.e. whether a directed path exists from self to the target.
+        Return a path (list of vertices) from self to the target if one exists, otherwise return None.
+        """
+        visited += [self]
+        if self.item == target_item:
+            return visited
+        else:
+            for u in self.links_out:
+                if u not in visited:
+                    path = u.check_directed_connected(target_item, visited)
+                    if path is not None:
+                        return path
+            return None
 
 class Graph:
     """A graph.
@@ -241,6 +260,18 @@ class Graph:
             return v1.check_connected_distance(item2, set(), d)
         else:
             return False
+    
+    def check_strongly_connected_path(self, item1: Any, item2: Any) -> tuple[
+        Optional[list[_Vertex]], Optional[list[_Vertex]]
+        ]:
+        """Check whether two vertices are strongly connected; 
+        i.e. whether a directed path exists from one to the other and back.
+        Return both respective paths (if they exist) as a tuple of lists. 
+        If one does not exist, None is returned instead of a list.
+        """
+        path_1 = self._vertices[item1].check_directed_connected(item2)
+        path_2 = self._vertices[item2].check_directed_connected(item1)
+        return (path_1, path_2)
 
 
 if __name__ == '__main__':
