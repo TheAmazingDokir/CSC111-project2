@@ -21,11 +21,11 @@ class _Vertex:
         - all(self in u.neighbours for u in self.neighbours)
     """
     item: Any
-    neighbours: set[_Vertex]
-    links_in: set[_Vertex]
-    links_out: set[_Vertex]
-    engagement: float
-    display_size: float
+    neighbours: set[_Vertex] = []
+    links_in: set[_Vertex] = []
+    links_out: set[_Vertex] = []
+    engagement: float = 0
+    display_size: float = 0
 
     def __init__(self, item: Any, neighbours: set[_Vertex]) -> None:
         """Initialize a new vertex with the given item and neighbours."""
@@ -289,11 +289,13 @@ class Graph:
         """
         graph_nx = nx.DiGraph()
         for v in self._vertices.values():
-            graph_nx.add_node(v.item, v.links_in, v.links_out, v.engagement, v.display_size)
+            graph_nx.add_node(v.item, links_in=v.links_in, links_out=v.links_out,
+                              engagement=v.engagement, display_size=v.display_size)
 
             for u in v.neighbours:
                 if graph_nx.number_of_nodes() < max_vertices:
-                    graph_nx.add_node(u.item, u.links_in, u.links_out, u.engagement, u.display_size)
+                    graph_nx.add_node(u.item, links_in=u.links_in, links_out=u.links_out,
+                                      engagement=u.engagement, display_size=u.display_size)
 
                 if u.item in graph_nx.nodes:
                     graph_nx.add_edge(v.item, u.item)
