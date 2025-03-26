@@ -20,6 +20,7 @@ class _Vertex:
     links_in: set[_Vertex]
     links_out: set[_Vertex]
     engagement: float
+    display_size: float
 
     def __init__(self, item: Any, neighbours: set[_Vertex]) -> None:
         """Initialize a new vertex with the given item and neighbours."""
