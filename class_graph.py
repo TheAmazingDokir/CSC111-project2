@@ -1,15 +1,20 @@
-# GRAPH IMPLEMENTATION COPIED FROM EXERCISE 3
+# GRAPH IMPLEMENTATION ADAPTED FROM EXERCISE 3
 
 from __future__ import annotations
 from typing import Any, Optional
+import networkx as nx
 
 
 class _Vertex:
-    """A vertex in a graph.
+    """A vertex (representing a website) in a graph (the web. aptly named).
 
     Instance Attributes:
-        - item: The data stored in this vertex.
-        - neighbours: The vertices that are adjacent to this vertex.
+        - item: The data stored in this vertex
+        - neighbours: The vertices that are adjacent to this vertex
+        - links_in: The vertices connnected to this vertex with incoming edges
+        - links_out: The vertices connnected to this vertex with outgoing edges
+        - engagement: The numerical engagement rating of this vertex (website)
+        - display_size: The final intended display factor of this vertex (website)
 
     Representation Invariants:
         - self not in self.neighbours
@@ -273,6 +278,30 @@ class Graph:
         path_1 = self._vertices[item1].check_directed_connected(item2)
         path_2 = self._vertices[item2].check_directed_connected(item1)
         return (path_1, path_2)
+    
+    def to_networkx(self, max_vertices: int = 5000) -> nx.DiGraph:
+        """Convert this graph into a networkx Graph.
+
+        max_vertices specifies the maximum number of vertices that can appear in the graph.
+        (This is necessary to limit the visualization output for large graphs.)
+
+        Note that this method is provided for you, and you shouldn't change it.
+        """
+        graph_nx = nx.DiGraph()
+        for v in self._vertices.values():
+            graph_nx.add_node(v.item, v.links_in, v.links_out, v.engagement, v.display_size)
+
+            for u in v.neighbours:
+                if graph_nx.number_of_nodes() < max_vertices:
+                    graph_nx.add_node(u.item, u.links_in, u.links_out, u.engagement, u.display_size)
+
+                if u.item in graph_nx.nodes:
+                    graph_nx.add_edge(v.item, u.item)
+
+            if graph_nx.number_of_nodes() >= max_vertices:
+                break
+
+        return graph_nx
 
 
 if __name__ == '__main__':
