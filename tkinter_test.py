@@ -19,7 +19,7 @@ scale_factor = 10
 #
 #   Sample details for graph; g is a class_graph graph instance
 #
-g = cg.Graph()
+g = cg.Directed_Graph()
 g.add_vertex(1)
 g.add_vertex(2)
 g.add_vertex(3)
