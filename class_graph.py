@@ -269,6 +269,11 @@ class Directed_Graph:
         path_2 = self.directed_connected(item2, item1)
         return (path_1, path_2)
     
+    def get_edge_stats(self, item1: Any, item2: Any) -> dict[str, Any]:
+        """Return the dictionary of edge stats associated with the edge from item1 to item2.
+        """
+        return self._edges[(item1, item2)]
+    
     def to_networkx(self, max_vertices: int = 5000) -> nx.DiGraph:
         """Convert this graph into a networkx Graph.
 
