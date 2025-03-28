@@ -145,17 +145,18 @@ class Directed_Graph:
     #         Maps item to _Vertex object.
     #     - _edges:
     #           A collection of the edges contained in this graph.
-    #           Maps ordered tuples of items to stats attatched to the edge between the vertices with the items.
+    #           Maps ordered tuples of items to a dict of stats attatched to the edge 
+    #           between the vertices with the items.
     
     _vertices: dict[Any, _Vertex]
     _edges: dict[tuple[Any, Any], dict[str, Any]]
 
     def __init__(self) -> None:
         """Initialize an empty graph (no vertices or edges)."""
-        self._vertices = {}
-        self._edges = {}
+        self._vertices = dict()
+        self._edges = dict()
 
-    def add_vertex(self, item: Any, vertex_stats: dict[str, Any] = {}) -> None:
+    def add_vertex(self, item: Any, vertex_stats: dict[str, Any] = dict()) -> None:
         """Add a vertex with the given item and stats to this graph.
 
         The new vertex is not adjacent to any other vertices.
@@ -280,13 +281,9 @@ class Directed_Graph:
         for v in self._vertices.values():
             graph_nx.add_node(v.item, links_in=v.links_in, links_out=v.links_out, stats=v.stats)
             
-            for u in v.links_out:
-                if graph_nx.number_of_nodes() < max_vertices:
-                    if u.item not in graph_nx.nodes:
-                        graph_nx.add_node(u.item, links_in=u.links_in, links_out=u.links_out, stats=u.stats)
-
-                if u.item in graph_nx.nodes:
-                    graph_nx.add_edge(v.item, u.item, stats=self._edges[(v.item, u.item)])
+            for (item1, item2) in self._edges:
+                if item1 == v.item:
+                    graph_nx.add_edge(item1, item2, stats=self._edges[(item1, item2)])
 
             if graph_nx.number_of_nodes() >= max_vertices:
                 break
