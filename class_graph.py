@@ -3,7 +3,7 @@
 from __future__ import annotations
 from typing import Any, Optional
 import networkx as nx
-
+from typing import ItemsView, KeysView, ValuesView
 
 class _Vertex:
     """A vertex (representing a website) in a graph (the web. aptly named).
@@ -269,10 +269,15 @@ class Directed_Graph:
         path_2 = self.directed_connected(item2, item1)
         return (path_1, path_2)
     
-    def get_edge_stats(self, item1: Any, item2: Any) -> dict[str, Any]:
-        """Return the dictionary of edge stats associated with the edge from item1 to item2.
+    def vertices(self) -> ItemsView[dict[str, Any]]:
+        """Return a view object of the dictionary of vertex stats associated with each vertex.
         """
-        return self._edges[(item1, item2)]
+        return self._vertices.items()
+    
+    def edges(self, item1: Any, item2: Any) -> ItemsView[dict[tuple[Any, Any], dict[str, Any]]]:
+        """Return a view object of the dictionary of edge stats associated with each edge.
+        """
+        return self._edges.items()
     
     def to_networkx(self, max_vertices: int = 5000) -> nx.DiGraph:
         """Convert this graph into a networkx Graph.
