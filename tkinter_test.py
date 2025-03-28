@@ -1,6 +1,8 @@
 import networkx as nx
+import matplotlib
+matplotlib.use('TkAgg')
 import matplotlib.pyplot as plt
-from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
+from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg, NavigationToolbar2Tk
 import tkinter as tk
 from tkinter import ttk
 import class_graph as cg
@@ -47,6 +49,10 @@ nx.draw_networkx_labels(G,pos,font_size=1.5*scale_factor,font_family='sans-serif
 canvas = FigureCanvasTkAgg(fig, master=root)
 canvas.draw()
 canvas.get_tk_widget().pack()
+toolbar = NavigationToolbar2Tk(canvas, root)
+toolbar.update()
+canvas._tkcanvas.pack()
+
 # Quit button; ONLY THE QUIT BUTTON CLOSES THE WINDOW; HITTING THE "X" LEAVES IT RUNNING IN THE BACKGROUND!
 button_quit = ttk.Button(master=root, text="Quit", command=root.quit)
 button_quit.pack()
