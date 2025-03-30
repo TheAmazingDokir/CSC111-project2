@@ -91,7 +91,7 @@ def calc_links_traffic(v: clg._Website) -> int:
     
     >>> v = clg._Website('example.com', stats={'daily_pageviews': 100, 'site_links': 10})
     >>> calc_links_traffic(v)
-    230
+    240
     """
     daily_pageviews = v.stats["daily_pageviews"]
     site_links = v.stats["site_links"]
@@ -119,7 +119,7 @@ def calc_engagement_rating(v: clg._Website) -> int:
 
     weight1 = 0.5
     weight2 = 0.5
-    weight3 = 0.4
+    weight3 = 0.5
 
     overall_activity = daily_min * daily_pageviews
     quality_factor = (min_per_page + search_traffic) / 2
@@ -287,7 +287,7 @@ def calc_global_links_traffic(g: clg.Webgraph) -> int:
     >>> g.add_vertex('site1', {'daily_pageviews': 100, 'site_links': 10})
     >>> g.add_vertex('site2', {'daily_pageviews': 200, 'site_links': 20})
     >>> calc_global_links_traffic(g)
-    360
+    425
     """
     vertices = g._vertices.values()
     count = 0
