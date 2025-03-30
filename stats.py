@@ -1,3 +1,7 @@
+# TODO ADD TITLE HERE FOR FILE 
+
+
+
 import math as m
 import numpy as np
 import class_graph as clg
@@ -356,3 +360,35 @@ def predict_rank(g: clg.Webgraph, site: str) -> int:
     for index, (site_item, rating) in enumerate(sorted_ratings):
         if site_item == site:
             return index
+
+
+def loader(g: clg.Webgraph, stat: callable):
+    """Load calculated statistics into all vertices in the graph.
+    
+    """
+    # Grab the target statistics key based on function name
+    func_name = stat_func.__name__
+    
+    # Special handling for predict_rank which needs graph and web name
+    if func_name == 'predict_rank':
+        key = 'predicted_rank'
+        for v in g._vertices.values():
+            rank = stat_func(g, v.domain_name)
+            v.stats[key] = rank
+    else:
+        # Otherwise compute and load normally
+        key = func_name.replace('calc_', '', 1)
+        for v in g._vertices.values():
+            value = stat_func(v)
+            v.stats[key] = value
+
+
+if __name__ == '__main__':
+    doctest.testmod()
+
+    import python_ta
+    python_ta.check_all(config={
+        'extra-imports': ["numpy", "math", "class_graph"],  # the names (strs) of imported modules
+        'allowed-io': [],  # the names (strs) of functions that call print/open/input
+        'max-line-length': 120
+    })

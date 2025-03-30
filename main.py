@@ -6,10 +6,8 @@ VERTICES_FILE = "data/vertices.txt"
 EDGES_FILE = "data/edges.txt"
 WEBSITE_STATS_FILE = "data/website_stats.csv"
 
-
 # Loading the data
 webgraph = load_graph(VERTICES_FILE, EDGES_FILE, WEBSITE_STATS_FILE, load_with_stats_only=True)
-
 
 # Calculating global stats
 global_daily_min = stats.calc_global_daily_min(webgraph)
@@ -25,12 +23,16 @@ global_engagement_rating = stats.calc_global_engagement_rating(webgraph)
 
 
 # Updating vertices with individual stats
-# TODO w/ loops
+stats.loader(g, calc_min_per_page)
+stats.loader(g, calc_search_traffic)
+stats.loader(g, calc_links_traffic)
+stats.loader(g, calc_engagement_rating)
+stats.loader(g, predict_rank)
 
 
+# RENDER AND DISPLAY GRAPH
+# TODO
 
-# TODO: RENDER AND DISPLAY GRAPH
-#       1.
 
 if __name__ == '__main__':
     import python_ta
