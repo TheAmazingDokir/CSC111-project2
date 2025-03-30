@@ -46,10 +46,6 @@ import class_graph as clg
     # _edges: dict[tuple[Any, Any], dict[str, Any]]
 
 
-
-
-# Individual stats
-
 def calc_min_per_page(v: clg._Vertex) -> int:
     """Calculate the estimated average minutes spent per page.
     
@@ -103,7 +99,6 @@ def calc_links_traffic(v: clg._Vertex) -> int:
     links_traffic = daily_pageviews * m.log(site_links + 1)
     return round(links_traffic)
 
-
 def calc_engagement_rating(v: clg._Vertex) -> int:
     """Calculate the overall success rating for a website based on various statistics.
     
@@ -133,17 +128,23 @@ def calc_engagement_rating(v: clg._Vertex) -> int:
     engagement_rating = overall_activity**weight1 * quality_factor**weight2 * link_influence**weight3
     return round(engagement_rating)
 
+def percentify(value: int, key: callable, g: clg.Directed_Graph) -> int:
+    """Returns the percentage difference between the given statistics value and the global average from the graph.
+    
+    Preconditions:
+        - The graph `g` must contain vertices with valid 'daily_min', 'daily_pageviews', 'traffic_ratio', and 'site_links' stats.
+        - The global average calculated by `key(g)` must be non-zero.
+    
+    >>> percentify(10, calc_global_daily_min, g)
+    -68
+    """
+    global_avg = key(g)
 
-
-
-# Global stats
-
-def percentify(value: int, key: callable) -> int:
-    """Should pretty much give out the % of how much + or - it is of the average, key is there to call that specific function to calc that global avg."""
-    pass
-
-
-
+    if global_avg == 0:
+        return 0
+    
+    percent_diff = ((value - global_avg) / global_avg) * 100
+    return round(percent_diff)
 
 def calc_global_daily_min(g: clg.Directed_Graph) -> int:
     """Calculates the global average for daily minutes on site across all vertices in the graph.
@@ -286,7 +287,7 @@ def calc_global_links_traffic(g: clg.Directed_Graph) -> int:
     >>> g.add_vertex('site1', {'daily_pageviews': 100, 'site_links': 10})
     >>> g.add_vertex('site2', {'daily_pageviews': 200, 'site_links': 20})
     >>> calc_global_links_traffic(g)
-    TODO the result here
+    360
     """
     vertices = g._vertices.values()
     count = 0
@@ -314,7 +315,7 @@ def calc_global_engagement_rating(g: clg.Directed_Graph) -> int:
     >>> g.add_vertex('site1', {'daily_min': 10, 'daily_pageviews': 5, 'traffic_ratio': 0.5, 'site_links': 10})
     >>> g.add_vertex('site2', {'daily_min': 20, 'daily_pageviews': 10, 'traffic_ratio': 0.3, 'site_links': 15})
     >>> calc_global_engagement_rating(g)
-    TODO add final result here
+    10
     """
     vertices = g._vertices.values()
     count = 0
@@ -330,19 +331,28 @@ def calc_global_engagement_rating(g: clg.Directed_Graph) -> int:
     avg = total / count
     return round(avg)
 
-
-
-def predict_rank() -> int:
-    """sends the index of the vertices sorted by their engagement ratings."""
-    pass 
-
-# Display Data:
-    # daily_min: Given.
-    # daily_pageviews: Given.
-    # min_per_page: daily_min / daily_pageviews
-    # search_traffic: daily_min * traffic_ratio
-    # site_links: Given.
-    # links_traffic: daily_pageviews * log(site_links + 1)
-    # engagement_rating: (daily_min * daily_pageviews)^0.5 * ((min_per_page + search_traffic) / 2)^0.5 * (ln(links_traffic + 1))^0.5
-    # predicted_rank: Index of website when all sorted by engagement score.
-
+def predict_rank(g: clg.Directed_Graph, site: str) -> int:
+    """Return the rank (index) of the specified vertex based on its engagement rating in the graph.
+    
+    Preconditions:
+        - `g._vertices` must contain valid vertices with the required stats for engagement rating calculation.
+        - `site` must be a valid key in `g._vertices`.
+    
+    >>> g = clg.Directed_Graph()
+    >>> g.add_vertex('web1', {'daily_min': 10, 'daily_pageviews': 5, 'traffic_ratio': 0.5, 'site_links': 10})
+    >>> g.add_vertex('web2', {'daily_min': 20, 'daily_pageviews': 10, 'traffic_ratio': 0.3, 'site_links': 15})
+    >>> predict_rank(g, 'web1')
+    1
+    """
+    # Calculate engagement ratings for all vertices
+    engagement_ratings = []
+    for vertex in g._vertices.values():
+        engagement_ratings.append((vertex.item, calc_engagement_rating(vertex)))
+    
+    # Sort vertices by engagement rating (in descending order)
+    sorted_ratings = sorted(engagement_ratings, key=lambda x: x[1], reverse=True)
+    
+    # Extract the rank of the specified site
+    for index, (site_item, rating) in enumerate(sorted_ratings):
+        if site_item == site:
+            return index
