@@ -1,6 +1,6 @@
 import math as m
 import numpy as np
-import class_graph.py as clg
+import class_graph as clg
 
     # Sample stats representation:
     # Website: math.toronto.edu
@@ -46,11 +46,20 @@ import class_graph.py as clg
     # _edges: dict[tuple[Any, Any], dict[str, Any]]
 
 
+
+
 # Individual stats
 
 def calc_min_per_page(v: clg._Vertex) -> int:
-    """calculates the estimated average minutes spent per page. 
-    TODO: include doctests
+    """Calculate the estimated average minutes spent per page.
+    
+    Preconditions:
+        - 'daily_min' and 'daily_pageviews' are in v.stats.keys()
+        - v.stats['daily_pageviews'] > 0
+    
+    >>> v = clg._Vertex('example.com', stats={'daily_min': 10, 'daily_pageviews': 5})
+    >>> calc_min_per_page(v)
+    2
     """
     daily_min = v.stats["daily_min"]
     daily_pageviews = v.stats["daily_pageviews"]
@@ -62,8 +71,14 @@ def calc_min_per_page(v: clg._Vertex) -> int:
     return round(min_per_page)
 
 def calc_search_traffic(v: clg._Vertex) -> int:
-    """calculates the estimated traffic (minutes) brought from visitors from search engines.
-    TODO: include doctests
+    """Calculate the estimated traffic (minutes) from visitors via search engines.
+    
+    Preconditions:
+        - 'daily_min' and 'traffic_ratio' are in v.stats.keys()
+    
+    >>> v = clg._Vertex('example.com', stats={'daily_min': 10, 'traffic_ratio': 0.5})
+    >>> calc_search_traffic(v)
+    5
     """
     daily_min = v.stats["daily_min"]
     traffic_ratio = v.stats["traffic_ratio"]
@@ -72,19 +87,34 @@ def calc_search_traffic(v: clg._Vertex) -> int:
     return round(search_traffic)
 
 def calc_links_traffic(v: clg._Vertex) -> int:
-    """calculates the estimated traffic (minutes) brought from visitors from linking websites.
-    TODO: include doctests
+    """Calculate the estimated traffic (minutes) from visitors via linking websites.
+    
+    Preconditions:
+        - 'daily_pageviews' and 'site_links' are in v.stats
+        - v.stats['site_links'] >= 0
+    
+    >>> v = clg._Vertex('example.com', stats={'daily_pageviews': 100, 'site_links': 10})
+    >>> calc_links_traffic(v)
+    230
     """
     daily_pageviews = v.stats["daily_pageviews"]
     site_links = v.stats["site_links"]
 
-    links_traffic = daily_pageviews * log(site_links + 1)
+    links_traffic = daily_pageviews * m.log(site_links + 1)
     return round(links_traffic)
 
 
 def calc_engagement_rating(v: clg._Vertex) -> int:
-    """Calculates the overall success rating for the website based on previously calculated statistics.
-    TODO: include doctests
+    """Calculate the overall success rating for a website based on various statistics.
+    
+    Preconditions:
+        - All required stats exist in v.stats: 'daily_min', 'daily_pageviews', 'traffic_ratio', 'site_links'
+        - v.stats['daily_pageviews'] > 0
+        - v.stats['site_links'] >= 0
+    
+    >>> v = clg._Vertex('example.com', stats={'daily_min': 10, 'daily_pageviews': 5, 'traffic_ratio': 0.5, 'site_links': 10})
+    >>> calc_engagement_rating(v)
+    11
     """
     daily_min = v.stats["daily_min"]
     daily_pageviews = v.stats["daily_pageviews"]
@@ -98,48 +128,221 @@ def calc_engagement_rating(v: clg._Vertex) -> int:
 
     overall_activity = daily_min * daily_pageviews
     quality_factor = (min_per_page + search_traffic) / 2
-    link_influence = ln(links_traffic + 1)
+    link_influence = np.log(links_traffic + 1)
 
-    engagement_rating = overall_activity^weight1 * quality_factor^weight2 * link_influence^weight3
+    engagement_rating = overall_activity**weight1 * quality_factor**weight2 * link_influence**weight3
     return round(engagement_rating)
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 
 
 # Global stats
 
-
-def calc_global_daily_min(g: Directed_Graph) -> None:
-    """Calculates the global average for daily minutes on site."""
+def percentify(value: int, key: callable) -> int:
+    """Should pretty much give out the % of how much + or - it is of the average, key is there to call that specific function to calc that global avg."""
     pass
 
-def calc_global_daily_pageviews() -> None:
-    """Calculates the global average for daily pageviews per visitor."""
-    pass
-
-def calc_global_traffic_ratio() -> None:
-    """Calculates the global average for traffic ratio from search."""
-    pass
-
-def calc_global_site_links() -> None:
-    """Calculates the global average for site linking in."""
-    pass
-
-    # more to be added...
 
 
 
+def calc_global_daily_min(g: clg.Directed_Graph) -> int:
+    """Calculates the global average for daily minutes on site across all vertices in the graph.
+    
+    Preconditions:
+        - Each vertex in g._vertices has 'daily_min' in its stats.
+    
+    >>> g = clg.Directed_Graph()
+    >>> g.add_vertex('site1', {'daily_min': 10})
+    >>> g.add_vertex('site2', {'daily_min': 20})
+    >>> calc_global_daily_min(g)
+    15
+    """
+    vertices = g._vertices.values()
+    count = 0
+    total = 0
+
+    for v in vertices:
+        total += v.stats.get("daily_min", 0)
+        count += 1
+
+    if count == 0:
+        return 0
+
+    avg = total / count
+    return round(avg)
+
+
+def calc_global_daily_pageviews(g: clg.Directed_Graph) -> int:
+    """Calculates the global average for daily pageviews per visitor across all vertices in the graph.
+    
+    Preconditions:
+        - Each vertex in g._vertices has 'daily_pageviews' in its stats.
+    
+    >>> g = clg.Directed_Graph()
+    >>> g.add_vertex('site1', {'daily_pageviews': 100})
+    >>> g.add_vertex('site2', {'daily_pageviews': 200})
+    >>> calc_global_daily_pageviews(g)
+    150
+    """
+    vertices = g._vertices.values()
+    count = 0
+    total = 0
+
+    for v in vertices:
+        total += v.stats.get("daily_pageviews", 0)
+        count += 1
+
+    if count == 0:
+        return 0
+
+    avg = total / count
+    return round(avg)
+
+def calc_global_min_per_page(g: clg.Directed_Graph) -> int:
+    """Calculates the global average for minutes per page by using calc_min_per_page for each vertex.
+    
+    Preconditions:
+        - Each vertex has 'daily_min' and 'daily_pageviews' in its stats and daily_pageviews > 0.
+    
+    >>> g = clg.Directed_Graph()
+    >>> g.add_vertex('site1', {'daily_min': 10, 'daily_pageviews': 5})
+    >>> g.add_vertex('site2', {'daily_min': 20, 'daily_pageviews': 10})
+    >>> calc_global_min_per_page(g)
+    2
+    """
+    vertices = g._vertices.values()
+    count = 0
+    total = 0
+
+    for v in vertices:
+        total += calc_min_per_page(v)
+        count += 1
+
+    if count == 0:
+        return 0
+
+    avg = total / count
+    return round(avg)
+
+def calc_global_search_traffic(g: clg.Directed_Graph) -> int:
+    """Calculates the global average for search traffic (in minutes) across all vertices.
+    
+    Preconditions:
+        - Each vertex has 'daily_min' and 'traffic_ratio' in its stats.
+    
+    >>> g = clg.Directed_Graph()
+    >>> g.add_vertex('site1', {'daily_min': 10, 'traffic_ratio': 0.5})
+    >>> g.add_vertex('site2', {'daily_min': 20, 'traffic_ratio': 0.3})
+    >>> calc_global_search_traffic(g)
+    8
+    """
+    vertices = g._vertices.values()
+    count = 0
+    total = 0
+
+    for v in vertices:
+        total += calc_search_traffic(v)
+        count += 1
+
+    if count == 0:
+        return 0
+
+    avg = total / count
+    return round(avg)
+
+def calc_global_site_links(g: clg.Directed_Graph) -> int:
+    """Calculates the global average for the total number of sites linking in across all vertices.
+    
+    Preconditions:
+        - Each vertex in g._vertices has 'site_links' in its stats.
+    
+    >>> g = clg.Directed_Graph()
+    >>> g.add_vertex('site1', {'site_links': 10})
+    >>> g.add_vertex('site2', {'site_links': 20})
+    >>> calc_global_site_links(g)
+    15
+    """
+    vertices = g._vertices.values()
+    count = 0
+    total = 0
+
+    for v in vertices:
+        total += v.stats.get("site_links", 0)
+        count += 1
+
+    if count == 0:
+        return 0
+
+    avg = total / count
+    return round(avg)
+
+def calc_global_links_traffic(g: clg.Directed_Graph) -> int:
+    """Calculates the global average for links traffic (in minutes) across all vertices.
+    
+    Preconditions:
+        - Each vertex has 'daily_pageviews' and 'site_links' in its stats.
+    
+    >>> g = clg.Directed_Graph()
+    >>> g.add_vertex('site1', {'daily_pageviews': 100, 'site_links': 10})
+    >>> g.add_vertex('site2', {'daily_pageviews': 200, 'site_links': 20})
+    >>> calc_global_links_traffic(g)
+    TODO the result here
+    """
+    vertices = g._vertices.values()
+    count = 0
+    total = 0
+
+    for v in vertices:
+        total += calc_links_traffic(v)
+        count += 1
+
+    if count == 0:
+        return 0
+
+    avg = total / count
+    return round(avg)
+
+
+def calc_global_engagement_rating(g: clg.Directed_Graph) -> int:
+    """
+    Calculates the global average engagement rating across all vertices in the graph.
+    
+    Preconditions:
+        - Each vertex in g._vertices has the required stats to compute engagement rating.
+    
+    >>> g = clg.Directed_Graph()
+    >>> g.add_vertex('site1', {'daily_min': 10, 'daily_pageviews': 5, 'traffic_ratio': 0.5, 'site_links': 10})
+    >>> g.add_vertex('site2', {'daily_min': 20, 'daily_pageviews': 10, 'traffic_ratio': 0.3, 'site_links': 15})
+    >>> calc_global_engagement_rating(g)
+    TODO add final result here
+    """
+    vertices = g._vertices.values()
+    count = 0
+    total = 0
+
+    for v in vertices:
+        total += calc_engagement_rating(v)
+        count += 1
+
+    if count == 0:
+        return 0
+
+    avg = total / count
+    return round(avg)
+
+
+
+def predict_rank() -> int:
+    """sends the index of the vertices sorted by their engagement ratings."""
+    pass 
+
+# Display Data:
+    # daily_min: Given.
+    # daily_pageviews: Given.
+    # min_per_page: daily_min / daily_pageviews
+    # search_traffic: daily_min * traffic_ratio
+    # site_links: Given.
+    # links_traffic: daily_pageviews * log(site_links + 1)
+    # engagement_rating: (daily_min * daily_pageviews)^0.5 * ((min_per_page + search_traffic) / 2)^0.5 * (ln(links_traffic + 1))^0.5
+    # predicted_rank: Index of website when all sorted by engagement score.
 
