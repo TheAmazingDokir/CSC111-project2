@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-from collections.abc import dict_items
+# from collections.abc import dict_items
 from typing import Any, Dict, Optional, Tuple
 import networkx as nx
 from typing import ItemsView, KeysView, ValuesView

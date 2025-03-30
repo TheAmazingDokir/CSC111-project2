@@ -21,18 +21,11 @@ scale_factor = 10
 #
 #   Sample details for graph; g is a class_graph graph instance
 #
-g = cg.Directed_Graph()
-g.add_vertex(1)
-g.add_vertex(2)
-g.add_vertex(3)
-g.add_vertex(4)
-g.add_vertex(5)
-g.add_vertex(6)
-g.add_edge(1,2)
-g.add_edge(1,3)
-g.add_edge(2,4)
-g.add_edge(2,5)
-g.add_edge(3,6)
+g = cg.Webgraph()
+g.add_vertex(0)
+for i in range(0,20):
+    g.add_vertex(i+1)
+    g.add_edge(i,i+1)
 # G is a networkx directed graph
 G = g.to_networkx()
 
