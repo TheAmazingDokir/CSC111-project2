@@ -11,22 +11,21 @@ WEBSITE_STATS_FILE = "data/website_stats.csv"
 webgraph = load_graph(VERTICES_FILE, EDGES_FILE, WEBSITE_STATS_FILE, load_with_stats_only=True)
 
 
+# Calculating global stats
+global_daily_min = stats.calc_global_daily_min(webgraph)
+global_daily_pageviews = stats.calc_global_daily_pageviews(webgraph)
+global_min_per_page = stats.calc_global_min_per_page(webgraph)
+global_search_traffic = stats.calc_global_search_traffic(webgraph)
+global_site_links = stats.calc_global_site_links(webgraph)
+global_links_traffic = stats.calc_global_links_traffic(webgraph)
+global_engagement_rating = stats.calc_global_engagement_rating(webgraph)
+
+# Updating main graph with global stats
+# TODO 
 
 
-# TODO: CALCULATE STATS
-
-# global per-graph stats
-# global_daily_min = g.calc_global_daily_min()
-# global_daily_pageviews = g.calc_global_daily_pageviews()
-# global_traffic_ratio = g.calc_global_traffic_ratio()
-# global_site_links = g.calc_global_site_links()
-
-# no more needed here since in next step, you can use the stats methods directly on vertices in a loop and update them
-
-
-# TODO: MODIFY GRAPH PARAMETERS
-#       1. update graph with global stats
-#       2. update all vertices w/ their stats
+# Updating vertices with individual stats
+# TODO w/ loops
 
 
 
