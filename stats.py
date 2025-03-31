@@ -53,7 +53,7 @@ def calc_search_traffic(v: clg._Website) -> int:
     return round(search_traffic)
 
 
-def calc_links_traffic(v: clg._Website) -> int:
+def calc_links_traffic(v: clg._Website) -> float:
     """Calculate the estimated traffic contribution from visitors via linking websites.
     
     Preconditions:
@@ -68,7 +68,7 @@ def calc_links_traffic(v: clg._Website) -> int:
     site_links = v.stats["site_links"]
 
     links_traffic = (site_links / (site_links + daily_pageviews)) * 100
-    return round(links_traffic)
+    return round(links_traffic, 2)
 
 
 def calc_engagement_rating(v: clg._Website) -> int:
