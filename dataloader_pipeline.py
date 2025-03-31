@@ -24,6 +24,7 @@ Usage by CSC111 teaching team permitted.
 import csv
 from class_graph import Webgraph
 
+WEBSITES_TO_EXCLUDE = ["xhamster3.com"]
 
 def load_graph(vertices_file: str, edges_file: str, website_stats_file: str, load_with_stats_only: bool = False,
                n_vertices: int = 10000) -> Webgraph:
@@ -97,7 +98,8 @@ def add_vertices_to_graph(graph: Webgraph, id_domain_mapping: dict[int, str], we
 
     for site_id in vertex_ids:
         domain = id_domain_mapping[site_id]
-        if domain == "xhamster3.com":
+        if domain in WEBSITES_TO_EXCLUDE:
+            del id_domain_mapping[site_id]
             continue
 
         if site_id in website_stats and count_websites < n_vertices:
@@ -123,9 +125,7 @@ def load_edges(graph: Webgraph, edges_file: str, id_domain_mapping: dict[int, st
             if src_id in id_domain_mapping and dst_id in id_domain_mapping:
                 src_domain = id_domain_mapping[src_id]
                 dst_domain = id_domain_mapping[dst_id]
-                if src_domain == "xhamster3.com":
-                    continue
-                if dst_domain == "xhamster3.com":
+                if src_domain in WEBSITES_TO_EXCLUDE or dst_domain in WEBSITES_TO_EXCLUDE:
                     continue
                 graph.add_edge(src_domain, dst_domain)
 
