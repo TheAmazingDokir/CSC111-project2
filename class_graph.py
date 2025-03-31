@@ -1,8 +1,22 @@
-# GRAPH IMPLEMENTATION ADAPTED FROM EXERCISE 3
+"""CSC111 Project 2: Final Submission
+
+Module Description
+==================
+This module contains an adaptation of the Graph and vertex classes from the course materials, which
+we adapted for each vertex to represent a website, and for the overall graph to visualize
+the correlation between performance/traffic and SEO indicators.
+
+Copyright and Usage Information
+===============================
+
+This file is Copyright (c) 2025 Kyrylo Degtiarenko, Samuel Joseph Iacobazzi,
+Arkhyp Boryshkevych, and John DiMatteo. Usage by the CSC111 teaching team is permitted.
+"""
 
 from __future__ import annotations
 from typing import Any, Optional
 import networkx as nx
+
 
 class _Website:
     """A vertex (representing a website) in a graph (the web. aptly named).
@@ -24,8 +38,8 @@ class _Website:
     links_out: set[_Website]
     stats: dict[str, Any]
 
-    def __init__(self, domain_name: str, links_in=None, links_out=None,
-                 stats=None) -> None:
+    def __init__(self, domain_name: str, links_in: set[_Website] = None,
+                 links_out: set[_Website] = None, stats: dict[str, Any] = None) -> None:
         """Initialize a new vertex with the given item, links_in and links_out, and stats.
         """
         if links_out is None:
@@ -39,7 +53,7 @@ class _Website:
         self.links_out = links_out
         self.stats = stats
 
-    def check_connected(self, target_item: Any, visited=None) -> Optional[list]:
+    def check_connected(self, target_item: Any, visited: list = None) -> Optional[list]:
         """Return a path between self and the vertex corresponding to the target_item,
         WITHOUT using any of the vertices in visited.
 
@@ -54,7 +68,7 @@ class _Website:
             - self not in visited
         """
         if visited is None:
-            visited = list()
+            visited = []
         visited += [self.domain_name]
         if self.domain_name == target_item:
             return visited
@@ -64,7 +78,7 @@ class _Website:
                     return u.check_connected(target_item, visited)
         return None
 
-    def check_directed_connected(self, target_item: str, visited=None) -> Optional[list]:
+    def check_directed_connected(self, target_item: str, visited: list = None) -> Optional[list]:
         """Return a directed path between self and the vertex corresponding to the target_item,
         WITHOUT using any of the vertices in visited.
 
@@ -77,7 +91,7 @@ class _Website:
 
         Preconditions:
             - self not in visited
-            
+
         >>> v1 = _Website("site1")
         >>> v2 = _Website("site2")
         >>> v3 = _Website("site3")
@@ -94,7 +108,7 @@ class _Website:
         None
         """
         if visited is None:
-            visited = list()
+            visited = []
         visited += [self.domain_name]
         if self.domain_name == target_item:
             return visited
@@ -126,7 +140,7 @@ class _Website:
     #                     return True
     #         return False
 
-    def check_directed_connected_distance(self, target_item: Any, d: int, visited=None) -> bool:
+    def directed_connected_distance(self, target_item: Any, d: int, visited: list = None) -> bool:
         """Return whether this vertex is directed connected to a vertex corresponding to the target_item,
         WITHOUT using any of the vertices in visited, by a directed path of length <= d.
 
@@ -135,7 +149,7 @@ class _Website:
             - d >= 0
         """
         if visited is None:
-            visited = list()
+            visited = []
         if d == 0:
             if self.domain_name == target_item:
                 return True
@@ -143,10 +157,10 @@ class _Website:
                 return False
         else:
             for u in self.links_out:
-                if u not in visited:
-                    if u.check_directed_connected_distance(target_item, d - 1, visited + [self]):
-                        return True
+                if u not in visited and u.directed_connected_distance(target_item, d - 1, visited + [self]):
+                    return True
             return False
+
 
 class Webgraph:
     """A directed graph that in which each vertex is a website and every edge is hyperlink from one website to another.
@@ -154,40 +168,42 @@ class Webgraph:
     Instance Attributes:
         - global_stats: Mapping of stat names to the average of their values in the graph
         (e.g. engagement, display size, etc)
-        - vertices: A collection of the vertices contained in this graph. Maps item to _Vertex object.
 
     Representation Invariants:
-        - all(item == self.vertices[item].item for item in self.vertices)
+        - all(item == self._vertices[item].item for item in self._vertices)
     """
 
     # Private Instance Attributes:
+    #     - _vertices:
+    #           A collection of the vertices contained in this graph.
+    #         Maps item to _Vertex object.
     #     - _edges:
     #           A collection of the edges contained in this graph.
     #           Maps ordered tuples of items to a dict of stats attatched to the edge
     #           between the vertices with the items.
 
-    vertices: dict[str, _Website]
+    _vertices: dict[str, _Website]
     _edges: dict[tuple[str, str], dict[str, Any]]
     global_stats: dict[str, Any]
 
     def __init__(self) -> None:
         """Initialize an empty graph (no vertices or edges)."""
-        self.vertices = dict()
-        self._edges = dict()
-        self.global_stats = dict()
+        self._vertices = {}
+        self._edges = {}
+        self.global_stats = {}
 
-    def add_vertex(self, item: str, vertex_stats=None) -> None:
+    def add_vertex(self, item: str, vertex_stats: dict[Any, _Website] = None) -> None:
         """Add a vertex with the given item and stats to this graph.
 
         The new vertex is not adjacent to any other vertices.
 
         Preconditions:
-            - item not in self.vertices
+            - item not in self._vertices
         """
         if vertex_stats is None:
-            vertex_stats = dict()
-        if item not in self.vertices:
-            self.vertices[item] = _Website(item, stats=vertex_stats)
+            vertex_stats = {}
+        if item not in self._vertices:
+            self._vertices[item] = _Website(item, stats=vertex_stats)
 
     def add_edge(self, source: str, destination: str, edge_stats: Optional[dict[str, Any]] = None) -> None:
         """Add an edge from one vertex to the other with the respective items in this graph.
@@ -198,9 +214,9 @@ class Webgraph:
         Preconditions:
             - source != destination
         """
-        if source in self.vertices and destination in self.vertices:
-            src_v = self.vertices[source]
-            dest_v = self.vertices[destination]
+        if source in self._vertices and destination in self._vertices:
+            src_v = self._vertices[source]
+            dest_v = self._vertices[destination]
 
             # Add the new edge
             src_v.links_out.add(dest_v)
@@ -216,8 +232,8 @@ class Webgraph:
 
         Return False if item1 or item2 do not appear as vertices in this graph.
         """
-        if item1 in self.vertices and item2 in self.vertices:
-            v1 = self.vertices[item1]
+        if item1 in self._vertices and item2 in self._vertices:
+            v1 = self._vertices[item1]
             return any(v2.domain_name == item2 for v2 in v1.links_out)
         else:
             return False
@@ -232,8 +248,8 @@ class Webgraph:
 
         Return None if item1 or item2 do not appear as vertices in this graph.
         """
-        if item1 in self.vertices and item2 in self.vertices:
-            v1 = self.vertices[item1]
+        if item1 in self._vertices and item2 in self._vertices:
+            v1 = self._vertices[item1]
             return v1.check_connected(item2)
         else:
             return None
@@ -248,8 +264,8 @@ class Webgraph:
 
         Return False if item1 or item2 do not appear as vertices in this graph.
         """
-        if item1 in self.vertices and item2 in self.vertices:
-            v1 = self.vertices[item1]
+        if item1 in self._vertices and item2 in self._vertices:
+            v1 = self._vertices[item1]
             return v1.check_directed_connected(item2)
         else:
             return None
@@ -262,22 +278,23 @@ class Webgraph:
     #     Preconditions:
     #         - d >= 0
     #     """
-    #     if item1 in self.vertices and item2 in self.vertices:
-    #         v1 = self.vertices[item1]
+    #     if item1 in self._vertices and item2 in self._vertices:
+    #         v1 = self._vertices[item1]
     #         return v1.check_connected_distance(item2, d, set())
     #     else:
     #         return False
 
-    def strongly_connected(self, item1: str, item2: str) -> tuple[
+    def strongly_connected(self, string1: str, string2: str) -> tuple[
         Optional[list[_Website]], Optional[list[_Website]]
-        ]:
+    ]:
+
         """Check whether two vertices are strongly connected;
         i.e. whether a directed path exists from one to the other and back.
         Return both respective paths (if they exist) as a tuple of lists.
         If one does not exist, None is returned instead of a list.
         """
-        path_1 = self.directed_connected(item1, item2)
-        path_2 = self.directed_connected(item2, item1)
+        path_1 = self.directed_connected(string1, string2)
+        path_2 = self.directed_connected(string2, string1)
         return (path_1, path_2)
 
     def get_vertices(self) -> list[_Website]:
@@ -285,12 +302,12 @@ class Webgraph:
         # """
         """Return a list of the vertices in this graph.
         """
-        return list(self.vertices.values())
+        return list(self._vertices.values())
 
     def num_vertices(self) -> int:
         """Return the number of vertices in this graph.
         """
-        return len(self.vertices)
+        return len(self._vertices)
 
     def get_edges(self) -> list[tuple[str, str]]:
         # """Return a view object of the dictionary of edge stats associated with each edge.
@@ -313,7 +330,7 @@ class Webgraph:
         The stats (dict) of a DiGraph G returned by this method can be accessed with G.nodes["item"]["stat_name"]
         """
         graph_nx = nx.DiGraph()
-        for v in self.vertices.values():
+        for v in self._vertices.values():
             graph_nx.add_node(v.domain_name, links_in=v.links_in, links_out=v.links_out, stats=v.stats)
 
             for (item1, item2) in self._edges:
@@ -328,18 +345,19 @@ class Webgraph:
     def get_website_neighbours(self, item: str) -> set:
         """Return the domain names of the neighbours (links in and out) of the vertex with the given item.
         """
-        if item in self.vertices:
-            return {n.domain_name for n in self.vertices[item].links_in.union(self.vertices[item].links_out)}
+        if item in self._vertices:
+            return {n.domain_name for n in self._vertices[item].links_in.union(self._vertices[item].links_out)}
         else:
             return set()
+
 
 if __name__ == '__main__':
     # import doctest
     # doctest.testmod()
 
-    # import python_ta
-    # python_ta.check_all(config={
-    #     'max-line-length': 120,
-    #     'max-nested-blocks': 4
-    # })
-    pass
+    import python_ta
+    python_ta.check_all(config={
+        'extra-imports': ['networkx'],  # the names (strs) of imported modules
+        'allowed-io': [],  # the names (strs) of functions that call print/open/input
+        'max-line-length': 120
+    })
