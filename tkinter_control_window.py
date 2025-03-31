@@ -80,20 +80,20 @@ def get_selected_stats(stats_vars: dict) -> list:
 def calculate_selected_stats(webgraph: cg.Webgraph, selected_stats: list) -> dict:
     """Return a dictionary with each domain name and its calculated statistics for all selected stats."""
     stats_functions = {
-        'Min per Page': lambda g, v: stats.calc_min_per_page(v),
-        'Search Traffic': lambda g, v: stats.calc_search_traffic(v),
-        'Links Traffic': lambda g, v: stats.calc_links_traffic(v),
-        'Engagement Rating': lambda g, v: stats.calc_engagement_rating(v),
+        'Min per Page': lambda _, v: stats.calc_min_per_page(v),
+        'Search Traffic': lambda _, v: stats.calc_search_traffic(v),
+        'Links Traffic': lambda _, v: stats.calc_links_traffic(v),
+        'Engagement Rating': lambda _, v: stats.calc_engagement_rating(v),
         'Predicted Rank': lambda g, v: stats.predict_rank(g, v.domain_name),
-        'Degree': lambda g, v: stats.calc_degree(v),
-        'In Degree': lambda g, v: stats.calc_in_degree(v),
-        'Out Degree': lambda g, v: stats.calc_out_degree(v),
-        'Neighbours Avg Popularity': lambda g, v: stats.calc_neighbours_avg_popularity(v),
-        'Neighbour Largest In Degree': lambda g, v: stats.calc_neighbour_largest_in_degree(v),
-        'Popularity per Degree': lambda g, v: stats.calc_popularity_per_degree(v),
-        'Popularity per Neighbours Avg Popularity': lambda g, v: stats.calc_popularity_per_neighbours_avg_popularity(v),
+        'Degree': lambda _, v: stats.calc_degree(v),
+        'In Degree': lambda _, v: stats.calc_in_degree(v),
+        'Out Degree': lambda _, v: stats.calc_out_degree(v),
+        'Neighbours Avg Popularity': lambda _, v: stats.calc_neighbours_avg_popularity(v),
+        'Neighbour Largest In Degree': lambda _, v: stats.calc_neighbour_largest_in_degree(v),
+        'Popularity per Degree': lambda _, v: stats.calc_popularity_per_degree(v),
+        'Popularity per Neighbours Avg Popularity': lambda _, v: stats.calc_popularity_per_neighbours_avg_popularity(v),
         'Popularity per Neighbour Largest In Degree':
-            lambda g, v: stats.calc_popularity_per_neighbour_largest_in_degree(v),
+            lambda _, v: stats.calc_popularity_per_neighbour_largest_in_degree(v),
         'Harmonic Centrality': lambda g, v: round(stats.calc_harmonic_centrality(g)[v.domain_name], 2),
         'PageRank': lambda g, v: round(stats.calc_page_rank(g)[v.domain_name], 2)
     }

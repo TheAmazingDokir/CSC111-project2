@@ -14,16 +14,17 @@ This file is part of the CSC111 Project 2 submission. All rights reserved.
 """
 import numpy as np
 import class_graph as clg
+import networkx as nx
 
 
-def calc_min_per_page(v: clg._Website) -> float:
+def calc_min_per_page(v: clg.Website) -> float:
     """Calculate the estimated average minutes spent per page.
 
     Preconditions:
         - 'daily_min' and 'daily_pageviews' are in v.stats.keys()
         - v.stats['daily_pageviews'] > 0
 
-    >>> v = clg._Website('example.com', stats={'daily_min': 10, 'daily_pageviews': 5})
+    >>> v = clg.Website('example.com', stats={'daily_min': 10, 'daily_pageviews': 5})
     >>> calc_min_per_page(v)
     2.0
     """
@@ -37,13 +38,13 @@ def calc_min_per_page(v: clg._Website) -> float:
     return round(min_per_page, 2)
 
 
-def calc_search_traffic(v: clg._Website) -> float:
+def calc_search_traffic(v: clg.Website) -> float:
     """Calculate the estimated traffic contribution from visitors via search engines.
 
     Preconditions:
         - 'daily_min' and 'traffic_ratio' are in v.stats.keys()
 
-    >>> v = clg._Website('example.com', stats={'daily_min': 10, 'traffic_ratio': 0.5})
+    >>> v = clg.Website('example.com', stats={'daily_min': 10, 'traffic_ratio': 0.5})
     >>> calc_search_traffic(v)
     50.0
     """
@@ -53,14 +54,14 @@ def calc_search_traffic(v: clg._Website) -> float:
     return round(search_traffic, 2)
 
 
-def calc_links_traffic(v: clg._Website) -> float:
+def calc_links_traffic(v: clg.Website) -> float:
     """Calculate the estimated traffic contribution from visitors via linking websites.
 
     Preconditions:
         - 'daily_pageviews' and 'site_links' are in v.stats
         - v.stats['site_links'] >= 0
 
-    >>> v = clg._Website('example.com', stats={'daily_pageviews': 100, 'site_links': 10})
+    >>> v = clg.Website('example.com', stats={'daily_pageviews': 100, 'site_links': 10})
     >>> calc_links_traffic(v)
     9.09
     """
@@ -71,7 +72,7 @@ def calc_links_traffic(v: clg._Website) -> float:
     return round(links_traffic, 2)
 
 
-def calc_engagement_rating(v: clg._Website) -> float:
+def calc_engagement_rating(v: clg.Website) -> float:
     """Calculate the overall success rating for a website based on various statistics.
 
     Preconditions:
@@ -79,7 +80,7 @@ def calc_engagement_rating(v: clg._Website) -> float:
         - v.stats['daily_pageviews'] > 0
         - v.stats['site_links'] >= 0
 
-    >>> v = clg._Website('example.com', stats={'daily_min': 10, 'daily_pageviews': 5, 'traffic_ratio': 0.5, 'site_links': 10})
+    >>> v = clg.Website('example.com', stats={'daily_min': 10, 'daily_pageviews': 5, 'traffic_ratio': 0.5, 'site_links': 10})
     >>> print(calc_engagement_rating(v))
     74.02
     """
@@ -100,55 +101,55 @@ def calc_engagement_rating(v: clg._Website) -> float:
     engagement_rating = overall_activity**weight1 * quality_factor**weight2 * link_influence**weight3
     return round(engagement_rating, 2)
 
-def calc_degree(v: clg._Website) -> int:
+def calc_degree(v: clg.Website) -> int:
     """Calculate the degree of a vertex in the graph.
 
     Preconditions:
         - v must be a valid vertex in the graph.
 
-    >>> v = clg._Website('example.com')
+    >>> v = clg.Website('example.com')
     >>> calc_degree(v)
     0
     """
-    return len(v.neighbours)
+    return len(v.links_out) + len(v.links_in)
 
 
-def calc_in_degree(v: clg._Website) -> int:
+def calc_in_degree(v: clg.Website) -> int:
     """Calculate the number of in-going hyperlinks for website.
 
     Preconditions:
         - v must be a valid vertex in the webgraph.
 
-    >>> v = clg._Website('example.com')
+    >>> v = clg.Website('example.com')
     >>> calc_degree(v)
     0
     """
     return len(v.links_in)
 
-def calc_out_degree(v: clg._Website) -> int:
+def calc_out_degree(v: clg.Website) -> int:
     """Calculate the number of out-going hyperlinks for website.
 
     Preconditions:
         - v must be a valid vertex in the webgraph.
 
-    >>> v = clg._Website('example.com')
+    >>> v = clg.Website('example.com')
     >>> calc_degree(v)
     0
     """
     return len(v.links_out)
 
-def calc_neighbours_avg_popularity(v: clg._Website) -> float:
+def calc_neighbours_avg_popularity(v: clg.Website) -> float:
     """Calculate the average popularity of all neighbours of a vertex.
 
     Preconditions:
         - v must be a valid vertex in the graph.
         - v.stats['tranco_rank'] > 0
 
-    >>> v = clg._Website('example.com', stats={'tranco_rank': 100})
+    >>> v = clg.Website('example.com', stats={'tranco_rank': 100})
     >>> calc_neighbours_avg_popularity(v)
     100.0
     """
-    neighbours = v.neighbours
+    neighbours = v.links_out
     if not neighbours:
         return 0.0
 
@@ -156,16 +157,16 @@ def calc_neighbours_avg_popularity(v: clg._Website) -> float:
     avg_popularity = total_popularity / len(neighbours)
     return round(avg_popularity, 3)
 
-def calc_neighbour_largest_in_degree(v: clg._Website) -> float:
+def calc_neighbour_largest_in_degree(v: clg.Website) -> float:
     """Calculate the largest in-degree of all neighbours of a vertex."""
     degree = calc_degree(v)
     if degree == 0:
         return 0.0
 
-    in_degrees = [calc_in_degree(neighbour) for neighbour in v.neighbours]
+    in_degrees = [calc_in_degree(neighbour) for neighbour in v.links_out]
     return max(in_degrees)
 
-def calc_popularity_per_degree(v: clg._Website) -> float:
+def calc_popularity_per_degree(v: clg.Website) -> float:
     """Calculate the tranco ranking per number of links to and from the website.
     If now website point to this website, return 0.0.
 
@@ -173,7 +174,7 @@ def calc_popularity_per_degree(v: clg._Website) -> float:
         - v must be a valid vertex in the graph.
         - v.stats['tranco_rank'] > 0
 
-    >>> v = clg._Website('example.com', stats={'tranco_rank': 100})
+    >>> v = clg.Website('example.com', stats={'tranco_rank': 100})
     >>> calc_popularity_per_degree(v)
     100.0
     """
@@ -184,7 +185,7 @@ def calc_popularity_per_degree(v: clg._Website) -> float:
     popularity = (1 / v.stats.get('tranco_rank', 0)) / degree
     return round(popularity, 2)
 
-def calc_popularity_per_neighbours_avg_popularity(v: clg._Website) -> float:
+def calc_popularity_per_neighbours_avg_popularity(v: clg.Website) -> float:
     """Calculate the tranco ranking per average popularity of all neighbours of a vertex.
     If now website point to this website, return 0.0.
 
@@ -192,7 +193,7 @@ def calc_popularity_per_neighbours_avg_popularity(v: clg._Website) -> float:
         - v must be a valid vertex in the graph.
         - v.stats['tranco_rank'] > 0
 
-    >>> v = clg._Website('example.com', stats={'tranco_rank': 100})
+    >>> v = clg.Website('example.com', stats={'tranco_rank': 100})
     >>> calc_popularity_per_neighbours_avg_popularity(v)
     100.0
     """
@@ -203,7 +204,7 @@ def calc_popularity_per_neighbours_avg_popularity(v: clg._Website) -> float:
     popularity = (1 / v.stats.get('tranco_rank', 0)) / avg_popularity
     return round(popularity, 2)
 
-def calc_popularity_per_neighbour_largest_in_degree(v: clg._Website) -> float:
+def calc_popularity_per_neighbour_largest_in_degree(v: clg.Website) -> float:
     """Calculate the tranco ranking per largest in-degree of all neighbours of a vertex.
     If no website points to this website, return 0.0.
 
@@ -211,7 +212,7 @@ def calc_popularity_per_neighbour_largest_in_degree(v: clg._Website) -> float:
         - v must be a valid vertex in the graph.
         - v.stats['tranco_rank'] > 0
 
-    >>> v = clg._Website('example.com', stats={'tranco_rank': 100})
+    >>> v = clg.Website('example.com', stats={'tranco_rank': 100})
     >>> calc_popularity_per_neighbour_largest_in_degree(v)
     100.0
     """

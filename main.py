@@ -9,7 +9,7 @@ This is the main execution module for the website engagement analysis system. It
 3. Updating individual website vertices with key performance indicators
 4. Generating interactive visualizations of the web graph structure using Plotly
 
-The module serves as the entry point for the analysis pipeline, coordinating data loading, 
+The module serves as the entry point for the analysis pipeline, coordinating data loading,
 statistical calculations, and visualization components.
 
 Copyright and Usage Information
@@ -40,7 +40,7 @@ webgraph = load_graph(VERTICES_FILE, EDGES_FILE, WEBSITE_STATS_FILE, load_with_s
 # for v in webgraph.get_vertices():
 #     if v.domain_name.startswith("google"):
 #         webgraph.remove_vertex(v.domain_name)
-        
+
 
 # Calculate and update webgraph's global stats
 webgraph.global_stats["global_daily_min"] = stats.calc_global_daily_min(webgraph)
@@ -103,13 +103,12 @@ fig.show()
 # sorted_vertex_list = sorted(webgraph.get_vertices(), key=lambda v: v.stats["engagement_rating"], reverse=False)
 # for v in sorted_vertex_list:
 #     print(v.domain_name, v.stats["engagement_rating"])
-    
+
 
 
 # visual.launch_web_graph(webgraph, 10000)
 
 # tkw.launch_control_panel(webgraph, 10000)
-
 
 
 if __name__ == '__main__':
@@ -119,5 +118,5 @@ if __name__ == '__main__':
         'allowed-io': [],  # the names (strs) of functions that call print/open/input
         'max-line-length': 120
     })
-    
+
     pass

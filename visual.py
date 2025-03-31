@@ -15,6 +15,7 @@ VERTICES_FILE = "data/vertices.txt"
 EDGES_FILE = "data/edges.txt"
 WEBSITE_STATS_FILE = "data/website_stats.csv"
 
+
 def visualize_graph_with_stats(webgraph: Webgraph, stats_dict, size_by_tranco_rank=False):
     """
     Visualize the graph with tooltips for selected statistics and optional vertex sizing by inverted tranco_rank.
@@ -183,6 +184,7 @@ def visualize_communities(webgraph: Webgraph, stats_dict) -> None:
     fig.update_layout({'showlegend': False, 'width': 900, 'height': 900})
     fig.show()
 
+
 def launch_web_graph(webgraph: cg.Webgraph, n_vertices: int) -> None:
     """Launch the render of the updated webgraph in the browser.
     """
@@ -204,13 +206,26 @@ def launch_web_graph(webgraph: cg.Webgraph, n_vertices: int) -> None:
     vertex_dict = {v.domain_name: v for v in webgraph.get_vertices()}
 
     name = lambda v: (f"Website: {v.domain_name}<br>"+
-                    f"Avg Daily Min: {v.stats['daily_min']} ({stats.percentify(v.stats['daily_min'], stats.calc_global_daily_min, G)}% global)<br>"+
-                    f"Daily Unique Pageviews: {v.stats['daily_pageviews']} ({stats.percentify(v.stats['daily_pageviews'], stats.calc_global_daily_pageviews, G)}% global)<br>"+
-                    f"Avg Min Per Page: {v.stats['min_per_page']} ({stats.percentify(v.stats['min_per_page'], stats.calc_global_min_per_page, G)}% global)<br>"+
-                    f"Search Traffic Impact: {v.stats['search_traffic']}% ({stats.percentify(v.stats['search_traffic'], stats.calc_global_search_traffic, G)}% global)<br>"+
-                    f"Total Sites Linking-in: {v.stats['site_links']} ({stats.percentify(v.stats['site_links'], stats.calc_global_site_links, G)}% global)<br>"+
-                    f"Links Traffic Impact: {v.stats['links_traffic']}% ({stats.percentify(v.stats['links_traffic'], stats.calc_global_links_traffic, G)}% global)<br>"+
-                    f"Engagement Rating: {v.stats['engagement_rating']} ({stats.percentify(v.stats['engagement_rating'], stats.calc_global_engagement_rating, G)}% global)<br>"+
+                    f"Avg Daily Min: {v.stats['daily_min']} "
+                    f"({stats.percentify(v.stats['daily_min'], stats.calc_global_daily_min, webgraph)}% global)<br>" +
+                    f"Daily Unique Pageviews: {v.stats['daily_pageviews']} "
+                    f"({stats.percentify(v.stats['daily_pageviews'],
+                                         stats.calc_global_daily_pageviews, webgraph)}% global)<br>" +
+                    f"Avg Min Per Page: {v.stats['min_per_page']} "
+                    f"({stats.percentify(v.stats['min_per_page'], stats.calc_global_min_per_page, webgraph)}"
+                    f"% global)<br>" +
+                    f"Search Traffic Impact: "
+                    f"{v.stats['search_traffic']}% ({stats.percentify(v.stats['search_traffic'],
+                                                                      stats.calc_global_search_traffic, webgraph)}"
+                    f"% global)<br>" +
+                    f"Total Sites Linking-in: {v.stats['site_links']} "
+                    f"({stats.percentify(v.stats['site_links'], stats.calc_global_site_links, webgraph)}% global)<br>" +
+                    f"Links Traffic Impact: {v.stats['links_traffic']}% "
+                    f"({stats.percentify(v.stats['links_traffic'],
+                                         stats.calc_global_links_traffic, webgraph)}% global)<br>" +
+                    f"Engagement Rating: {v.stats['engagement_rating']} "
+                    f"({stats.percentify(v.stats['engagement_rating'], stats.calc_global_engagement_rating, webgraph)}"
+                    f"% global)<br>" +
                     f"Predicted Rank: {v.stats['predicted_rank']}")
     # Extract node coordinates and tooltips
     node_x, node_y, tooltips = [], [], []
@@ -241,3 +256,10 @@ if __name__ == "__main__":
     webgraph_ex = load_graph(VERTICES_FILE, EDGES_FILE, WEBSITE_STATS_FILE, True, 100)
     stats_dict_ex = {}
     visualize_graph_with_stats(webgraph_ex, stats_dict_ex, True)
+
+    import python_ta
+    python_ta.check_all(config={
+        'extra-imports': ["class_graph", "dataloader_pipeline", "stats", "plotly.graph_objects", "networkx", "math", "plotly.express", "visual", "tkinter_control_window", "tkinter", "matplotlib", "matplotlib.pyplot", "matplotlib.backends.backend_tkagg"],  # the names (strs) of imported modules
+        'allowed-io': [],  # the names (strs) of functions that call print/open/input
+        'max-line-length': 120
+    })
