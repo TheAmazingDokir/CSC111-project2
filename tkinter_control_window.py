@@ -42,36 +42,37 @@ def _refresh(g: cg.Webgraph, url: str) -> None:
     print(url)
     pass
 
-def _search_graph(g: cg.Webgraph, URL: str) -> list[str]:
+def _search_data_for_links(g: cg.Webgraph, URL: str) -> list[str]:
     """Search other websites for links towards the input website.
     """
     connected_websites = list()
     for url in [website.domain_name for website in g.get_vertices()]:
         if URL in 
     
-    # """Scrape the input website for hyperlinks. 
-    # Return a list of urls from the input website that are present in the input graph.
-    # """
-    # page = bs(re.get(URL).content, "html.parser")
-    # domain_names = list()
-    # for a in page.find_all("a", href=True):
-    #     link = str(a["href"])
-    #     if link[0:4] != "http": continue
+def scrape_website(g: cg.Webgraph, URL: str) -> list[str]:
+    """Scrape the input website for hyperlinks. 
+    Return a list of urls from the input website that are present in the input graph.
+    """
+    page = bs(re.get(URL).content, "html.parser")
+    domain_names = list()
+    for a in page.find_all("a", href=True):
+        link = str(a["href"])
+        if link[0:4] != "http": continue
         
-    #     pos1 = link.find("//")
-    #     if pos1 == -1: break
-    #     pos2 = link.find("/", pos1 + 2)
-    #     if pos2 == -1: break
+        pos1 = link.find("//")
+        if pos1 == -1: break
+        pos2 = link.find("/", pos1 + 2)
+        if pos2 == -1: break
         
-    #     if link[pos1 + 2: pos1 + 5] == "www":
-    #         domain_names.append(link[pos1 + 5: pos2])
-    #     else:
-    #         domain_names.append(link[pos1 + 2: pos2])
-    
-    # domains_in_graph = [website.domain_name for website in g.get_vertices()]
-    
-    # valid_links = [name for name in domain_names if name in domains_in_graph]
-    # return valid_links
+        if link[pos1 + 2: pos1 + 5] == "www":
+            domain_names.append(link[pos1 + 5: pos2])
+        else:
+            domain_names.append(link[pos1 + 2: pos2])
+
+    domains_in_graph = [website.domain_name for website in g.get_vertices()]
+
+    valid_links = [name for name in domain_names if name in domains_in_graph]
+    return valid_links
   
   
 g = cg.Webgraph()

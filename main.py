@@ -4,6 +4,7 @@ import stats
 import plotly.graph_objects as go
 import networkx as nx
 import math
+import plotly.express as px
 
 # File paths
 VERTICES_FILE = "data/vertices.txt"
@@ -35,7 +36,41 @@ stats.loader(webgraph, stats.predict_rank)
 #
 # for v in webgraph.get_vertices():
 #     normalized_degree = math.erf(len(webgraph.get_website_neighbours()))
-for 
+
+name = lambda v: (f"Website: {v.domain_name}<br>"+
+                    f"Avg daily min: {v.stats['daily_min']}<br>"+
+                    f"Daily pageviews per visitor: {v.stats['daily_pageviews']}<br>"+
+                    f"Min per page: {v.stats['min_per_page']}<br>"+
+                    f"Search traffic: {v.stats['search_traffic']}<br>"+
+                    f"Total sites linking in: {v.stats['site_links']}<br>"+
+                    f"Links traffic: {v.stats['links_traffic']}<br>"+
+                    f"Engagement rating: {v.stats['engagement_rating']}<br>"+
+                    f"Predicted rank: {v.stats['predicted_rank']}")
+
+x = [len(v.links_in) for v in webgraph.get_vertices()]
+y = [v.stats["engagement_rating"] for v in webgraph.get_vertices()]
+fig = px.scatter(x=x ,y=y, hover_name=[name(v) for v in webgraph.get_vertices()], trendline= "ols")
+fig.update_layout(xaxis_title="Number of Incoming Links", yaxis_title="Engagement Rating")
+fig.show()
+
+x = [len(v.links_in) for v in webgraph.get_vertices()]
+print(len(x))
+y = [v.stats["links_traffic"] for v in webgraph.get_vertices()]
+
+fig = px.scatter(x=x, y=y, hover_name=[name(v) for v in webgraph.get_vertices()], trendline= "ols")
+fig.update_layout(xaxis_title="Number of Incoming Links", yaxis_title="Links Traffic")
+fig.show()
+
+# x = [len(v.links_out) for v in webgraph.get_vertices()]
+# y = [v.stats["search_traffic"] for v in webgraph.get_vertices()]
+# fig = px.scatter(x=x, y=y, hover_name=[v.domain_name for v in webgraph.get_vertices()], trendline= "ols")
+# fig.show()
+# NO CORRELATION
+
+
+
+
+
 
 G = webgraph.to_networkx(300)
 
