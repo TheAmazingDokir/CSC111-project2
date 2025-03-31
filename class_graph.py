@@ -18,7 +18,7 @@ from typing import Any, Optional
 import networkx as nx
 
 
-class _Website:
+class Website:
     """A vertex (representing a website) in a graph (the web. aptly named).
 
     Instance Attributes:
@@ -34,12 +34,12 @@ class _Website:
         - all([self in u.links_out for u in self.links])
     """
     domain_name: str
-    links_in: set[_Website]
-    links_out: set[_Website]
+    links_in: set[Website]
+    links_out: set[Website]
     stats: dict[str, Any]
 
-    def __init__(self, domain_name: str, links_in: set[_Website] = None,
-                 links_out: set[_Website] = None, stats: dict[str, Any] = None) -> None:
+    def __init__(self, domain_name: str, links_in: set[Website] = None,
+                 links_out: set[Website] = None, stats: dict[str, Any] = None) -> None:
         """Initialize a new vertex with the given item, links_in and links_out, and stats.
         """
         if links_out is None:
@@ -92,10 +92,10 @@ class _Website:
         Preconditions:
             - self not in visited
 
-        >>> v1 = _Website("site1")
-        >>> v2 = _Website("site2")
-        >>> v3 = _Website("site3")
-        >>> v4 = _Website("site4")
+        >>> v1 = Website("site1")
+        >>> v2 = Website("site2")
+        >>> v3 = Website("site3")
+        >>> v4 = Website("site4")
         >>> v1.links_out.add(v2)
         >>> v2.links_out.add(v3)
         >>> v3.links_out.add(v1)
@@ -178,7 +178,7 @@ class Webgraph:
     #           Maps ordered tuples of items to a dict of stats attatched to the edge
     #           between the vertices with the items.
 
-    _vertices: dict[str, _Website]
+    _vertices: dict[str, Website]
     _edges: dict[tuple[str, str], dict[str, Any]]
     global_stats: dict[str, Any]
 
@@ -188,7 +188,7 @@ class Webgraph:
         self._edges = {}
         self.global_stats = {}
 
-    def add_vertex(self, item: str, vertex_stats: dict[Any, _Website] = None) -> None:
+    def add_vertex(self, item: str, vertex_stats: dict[Any, Website] = None) -> None:
         """Add a vertex with the given item and stats to this graph.
 
         The new vertex is not adjacent to any other vertices.
@@ -199,7 +199,7 @@ class Webgraph:
         if vertex_stats is None:
             vertex_stats = {}
         if item not in self._vertices:
-            self._vertices[item] = _Website(item, stats=vertex_stats)
+            self._vertices[item] = Website(item, stats=vertex_stats)
 
     def add_edge(self, source: str, destination: str, edge_stats: Optional[dict[str, Any]] = None) -> None:
         """Add an edge from one vertex to the other with the respective items in this graph.
@@ -281,7 +281,7 @@ class Webgraph:
     #         return False
 
     def strongly_connected(self, string1: str, string2: str) -> tuple[
-        Optional[list[_Website]], Optional[list[_Website]]
+        Optional[list[Website]], Optional[list[Website]]
     ]:
 
         """Check whether two vertices are strongly connected;
@@ -293,13 +293,13 @@ class Webgraph:
         path_2 = self.directed_connected(string2, string1)
         return (path_1, path_2)
 
-    def get_vertices(self) -> list[_Website]:
+    def get_vertices(self) -> list[Website]:
         # """Return a view object of the dictionary of vertex stats associated with each vertex.
         # """
         """Return a list of the vertices in this graph.
         """
         return list(self._vertices.values())
-    
+
     def remove_vertex(self, item: str) -> None:
         """Remove a vertex and its associated edges from the graph.
         """
