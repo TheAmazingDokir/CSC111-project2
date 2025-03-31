@@ -4,3 +4,5 @@ matplotlib
 plotly
 python-ta
 tkinter
+requests
+bs4
