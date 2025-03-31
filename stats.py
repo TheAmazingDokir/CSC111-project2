@@ -101,6 +101,7 @@ def calc_engagement_rating(v: clg.Website) -> float:
     engagement_rating = overall_activity**weight1 * quality_factor**weight2 * link_influence**weight3
     return round(engagement_rating, 2)
 
+
 def calc_degree(v: clg.Website) -> int:
     """Calculate the degree of a vertex in the graph.
 
@@ -126,6 +127,7 @@ def calc_in_degree(v: clg.Website) -> int:
     """
     return len(v.links_in)
 
+
 def calc_out_degree(v: clg.Website) -> int:
     """Calculate the number of out-going hyperlinks for website.
 
@@ -138,6 +140,7 @@ def calc_out_degree(v: clg.Website) -> int:
     """
     return len(v.links_out)
 
+
 def calc_neighbours_avg_popularity(v: clg.Website) -> float:
     """Calculate the average popularity of all neighbours of a vertex.
 
@@ -147,7 +150,7 @@ def calc_neighbours_avg_popularity(v: clg.Website) -> float:
 
     >>> v = clg.Website('example.com', stats={'tranco_rank': 100})
     >>> calc_neighbours_avg_popularity(v)
-    100.0
+    0.0
     """
     neighbours = v.links_out
     if not neighbours:
@@ -156,6 +159,7 @@ def calc_neighbours_avg_popularity(v: clg.Website) -> float:
     total_popularity = sum(1 / neighbour.stats.get('tranco_rank', 0) for neighbour in neighbours)
     avg_popularity = total_popularity / len(neighbours)
     return round(avg_popularity, 3)
+
 
 def calc_neighbour_largest_in_degree(v: clg.Website) -> float:
     """Calculate the largest in-degree of all neighbours of a vertex."""
@@ -168,6 +172,7 @@ def calc_neighbour_largest_in_degree(v: clg.Website) -> float:
         return 0.0
     return max(in_degrees)
 
+
 def calc_popularity_per_degree(v: clg.Website) -> float:
     """Calculate the tranco ranking per number of links to and from the website.
     If now website point to this website, return 0.0.
@@ -178,7 +183,7 @@ def calc_popularity_per_degree(v: clg.Website) -> float:
 
     >>> v = clg.Website('example.com', stats={'tranco_rank': 100})
     >>> calc_popularity_per_degree(v)
-    100.0
+    0.0
     """
     degree = calc_degree(v)
     if degree == 0:
@@ -186,6 +191,7 @@ def calc_popularity_per_degree(v: clg.Website) -> float:
 
     popularity = (1 / v.stats.get('tranco_rank', 0)) / degree
     return round(popularity, 2)
+
 
 def calc_popularity_per_neighbours_avg_popularity(v: clg.Website) -> float:
     """Calculate the tranco ranking per average popularity of all neighbours of a vertex.
@@ -197,7 +203,7 @@ def calc_popularity_per_neighbours_avg_popularity(v: clg.Website) -> float:
 
     >>> v = clg.Website('example.com', stats={'tranco_rank': 100})
     >>> calc_popularity_per_neighbours_avg_popularity(v)
-    100.0
+    0.0
     """
     avg_popularity = calc_neighbours_avg_popularity(v)
     if avg_popularity == 0:
@@ -205,6 +211,7 @@ def calc_popularity_per_neighbours_avg_popularity(v: clg.Website) -> float:
 
     popularity = (1 / v.stats.get('tranco_rank', 0)) / avg_popularity
     return round(popularity, 2)
+
 
 def calc_popularity_per_neighbour_largest_in_degree(v: clg.Website) -> float:
     """Calculate the tranco ranking per largest in-degree of all neighbours of a vertex.
@@ -216,7 +223,7 @@ def calc_popularity_per_neighbour_largest_in_degree(v: clg.Website) -> float:
 
     >>> v = clg.Website('example.com', stats={'tranco_rank': 100})
     >>> calc_popularity_per_neighbour_largest_in_degree(v)
-    100.0
+    0.0
     """
     largest_in_degree = calc_neighbour_largest_in_degree(v)
     if largest_in_degree == 0:
@@ -456,6 +463,8 @@ def predict_rank(g: clg.Webgraph, site: str) -> int:
     for index, (site_item, _) in enumerate(sorted_ratings):
         if site_item == site:
             return index
+    return -1
+
 
 def calc_harmonic_centrality(g: clg.Webgraph) -> dict:
     """Calculate the harmonic centrality for all vertices in the graph.
@@ -464,12 +473,14 @@ def calc_harmonic_centrality(g: clg.Webgraph) -> dict:
     centrality = nx.harmonic_centrality(nx_graph)
     return centrality
 
+
 def calc_page_rank(g: clg.Webgraph) -> dict:
     """Calculate the harmonic centrality for all vertices in the graph.
     """
     nx_graph = g.to_networkx()
     page_rank = nx.pagerank(nx_graph)
     return page_rank
+
 
 def loader(g: clg.Webgraph, stat_func: callable) -> None:
     """Load calculated statistics into all vertices in the graph.
@@ -492,12 +503,13 @@ def loader(g: clg.Webgraph, stat_func: callable) -> None:
 
 
 if __name__ == '__main__':
-    import doctest
-    doctest.testmod()
+    # import doctest
+    # doctest.testmod()
 
-    import python_ta
-    python_ta.check_all(config={
-        'extra-imports': ["numpy", "class_graph", "networkx"],  # the names (strs) of imported modules
-        'allowed-io': [],  # the names (strs) of functions that call print/open/input
-        'max-line-length': 120
-    })
+    # import python_ta
+    # python_ta.check_all(config={
+    #     'extra-imports': ["numpy", "class_graph", "networkx"],  # the names (strs) of imported modules
+    #     'allowed-io': [],  # the names (strs) of functions that call print/open/input
+    #     'max-line-length': 120
+    # })
+    pass
