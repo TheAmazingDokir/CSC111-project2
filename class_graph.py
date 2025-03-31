@@ -299,6 +299,15 @@ class Webgraph:
         """Return a list of the vertices in this graph.
         """
         return list(self._vertices.values())
+    
+    def remove_vertex(self, item: str) -> None:
+        """Remove a vertex and its associated edges from the graph.
+        """
+        if item in self._vertices:
+            del self._vertices[item]
+            for (item1, item2) in list(self._edges.keys()):
+                if item1 == item or item2 == item:
+                    del self._edges[(item1, item2)]
 
     def num_vertices(self) -> int:
         """Return the number of vertices in this graph.

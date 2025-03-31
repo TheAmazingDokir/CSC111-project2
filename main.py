@@ -32,6 +32,12 @@ WEBSITE_STATS_FILE = "data/website_stats.csv"
 # Load the data
 webgraph = load_graph(VERTICES_FILE, EDGES_FILE, WEBSITE_STATS_FILE, load_with_stats_only=True)
 
+# Cull google.*
+for v in webgraph.get_vertices():
+    if v.domain_name.startswith("google"):
+        webgraph.remove_vertex(v.domain_name)
+        
+
 # Calculate and update webgraph's global stats
 webgraph.global_stats["global_daily_min"] = stats.calc_global_daily_min(webgraph)
 webgraph.global_stats["global_daily_pageviews"] = stats.calc_global_daily_pageviews(webgraph)
@@ -90,10 +96,10 @@ fig.show()
 
 
 
-G = webgraph.to_networkx(300)
+G = webgraph.to_networkx()
 
 # Node positions and stats
-pos = nx.spring_layout(G)
+pos = nx.random_layout(G)
 # node_stats = {n: (n + 1) * 50 for n in G.nodes()}  # Sample daily_min values
 
 # Extract edge coordinates

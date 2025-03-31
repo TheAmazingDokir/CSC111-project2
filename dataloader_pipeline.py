@@ -51,6 +51,8 @@ def load_graph(vertices_file: str, edges_file: str, website_stats_file: str, loa
 
     for site_id in vertex_ids:
         domain = id_domain_mapping[site_id]
+        if domain == "xhamster3.com":
+            continue
 
         if site_id in website_stats and count_websites < n_vertices:
             stats = website_stats[site_id]
@@ -71,6 +73,10 @@ def load_graph(vertices_file: str, edges_file: str, website_stats_file: str, loa
                 # Only add edges if both vertices exist
                 src_domain = id_domain_mapping[src_id]
                 dst_domain = id_domain_mapping[dst_id]
+                if src_domain == "xhamster3.com":
+                    continue
+                if dst_domain == "xhamster3.com":
+                    continue
                 graph.add_edge(src_domain, dst_domain)
 
     return graph

@@ -28,10 +28,8 @@ def launch_control_panel(g: cg.Webgraph) -> None:
     text_add_website.insert("1.0", "Insert URL here...")
     text_add_website.pack()
     
-    url = text_add_website.get("1.0", tk.END)
-    
     button_add_site = ttk.Button(master=window, text="Add Website", padding=10, 
-                                 command=lambda: _refresh(g, url))
+                                 command=lambda: _refresh(g, text_add_website.get("1.0", tk.END)))
     button_add_site.pack(side=tk.RIGHT)
     
     window.update()
@@ -39,7 +37,7 @@ def launch_control_panel(g: cg.Webgraph) -> None:
     
 def _refresh(g: cg.Webgraph, url: str) -> None:
     """Add the url's website into the graph and refresh the page"""
-    print(url)
+    print(_search_data_for_links(g, url))
     pass
 
 def _search_data_for_links(g: cg.Webgraph, URL: str) -> list[str]:
@@ -47,11 +45,12 @@ def _search_data_for_links(g: cg.Webgraph, URL: str) -> list[str]:
     """
     connected_websites = list()
     for url in [website.domain_name for website in g.get_vertices()]:
-        if URL in 
+        if URL in __scrape_website(url):
+            connected_websites.append(url)
+    return connected_websites
     
-def scrape_website(g: cg.Webgraph, URL: str) -> list[str]:
-    """Scrape the input website for hyperlinks. 
-    Return a list of urls from the input website that are present in the input graph.
+def __scrape_website(URL: str) -> list[str]:
+    """Scrape the input website for hyperlinks to other sites. Return a list of urls from the input website.
     """
     page = bs(re.get(URL).content, "html.parser")
     domain_names = list()
@@ -69,10 +68,7 @@ def scrape_website(g: cg.Webgraph, URL: str) -> list[str]:
         else:
             domain_names.append(link[pos1 + 2: pos2])
 
-    domains_in_graph = [website.domain_name for website in g.get_vertices()]
-
-    valid_links = [name for name in domain_names if name in domains_in_graph]
-    return valid_links
+    return domain_names
   
   
 g = cg.Webgraph()
