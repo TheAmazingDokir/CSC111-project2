@@ -128,7 +128,7 @@ def calc_global_daily_min(g: clg.Webgraph) -> int:
     >>> calc_global_daily_min(g)
     15
     """
-    vertices = g.vertices.values()
+    vertices = g.get_vertices()
     count = 0
     total = 0
 
@@ -155,7 +155,7 @@ def calc_global_daily_pageviews(g: clg.Webgraph) -> int:
     >>> calc_global_daily_pageviews(g)
     150
     """
-    vertices = g.vertices.values()
+    vertices = g.get_vertices()
     count = 0
     total = 0
 
@@ -182,7 +182,7 @@ def calc_global_min_per_page(g: clg.Webgraph) -> int:
     >>> calc_global_min_per_page(g)
     2
     """
-    vertices = g.vertices.values()
+    vertices = g.get_vertices()
     count = 0
     total = 0
 
@@ -209,7 +209,7 @@ def calc_global_search_traffic(g: clg.Webgraph) -> int:
     >>> calc_global_search_traffic(g)
     40
     """
-    vertices = g.vertices.values()
+    vertices = g.get_vertices()
     count = 0
     total = 0
 
@@ -236,7 +236,7 @@ def calc_global_site_links(g: clg.Webgraph) -> int:
     >>> calc_global_site_links(g)
     15
     """
-    vertices = g.vertices.values()
+    vertices = g.get_vertices()
     count = 0
     total = 0
 
@@ -263,7 +263,7 @@ def calc_global_links_traffic(g: clg.Webgraph) -> int:
     >>> calc_global_links_traffic(g)
     9
     """
-    vertices = g.vertices.values()
+    vertices = g.get_vertices()
     count = 0
     total = 0
 
@@ -291,7 +291,7 @@ def calc_global_engagement_rating(g: clg.Webgraph) -> int:
     >>> calc_global_engagement_rating(g)
     94
     """
-    vertices = g.vertices.values()
+    vertices = g.get_vertices()
     count = 0
     total = 0
 
@@ -321,7 +321,7 @@ def predict_rank(g: clg.Webgraph, site: str) -> int:
     """
     # Calculate engagement ratings for all vertices
     engagement_ratings = []
-    for vertex in g.vertices.values():
+    for vertex in g.get_vertices():
         engagement_ratings.append((vertex.domain_name, calc_engagement_rating(vertex)))
     # Sort vertices by engagement rating (in descending order)
     sorted_ratings = sorted(engagement_ratings, key=lambda x: x[1], reverse=True)
@@ -341,13 +341,13 @@ def loader(g: clg.Webgraph, stat_func: callable) -> None:
     # Special handling for predict_rank which needs graph and web name
     if func_name == 'predict_rank':
         key = 'predicted_rank'
-        for v in g.vertices.values():
+        for v in g.get_vertices():
             rank = stat_func(g, v.domain_name)
             v.stats[key] = rank
     else:
         # Otherwise compute and load normally
         key = func_name.replace('calc_', '', 1)
-        for v in g.vertices.values():
+        for v in g.get_vertices():
             value = stat_func(v)
             v.stats[key] = value
 
