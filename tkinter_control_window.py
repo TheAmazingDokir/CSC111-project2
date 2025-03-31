@@ -49,7 +49,6 @@ def launch_control_panel(g: cg.Webgraph) -> None:
     button_scatter_plot = ttk.Button(master=window, text="Scatter Plot", padding=10,
                                      command=lambda: spg.render_scatter(g))
     button_scatter_plot.pack(side=tk.RIGHT)
-    
 
     # Button and text array for adding new websites
     button_quit = ttk.Button(master=window, text="Quit", padding=10, command=window.quit)
@@ -69,7 +68,6 @@ def launch_control_panel(g: cg.Webgraph) -> None:
     text_add_website.pack()
 
     text_add_website.insert("1.0", "Insert URL here...")
-    url = text_add_website.get("1.0", tk.END)
 
     # button_add_site = ttk.Button(master=window, text="Add Website", padding=10, command=_refresh(g, url))
     # button_add_site.pack(side=tk.RIGHT)
