@@ -11,7 +11,6 @@ class _Website:
         - item: The data stored in this vertex
         - links_in: The vertices connnected to this vertex with incoming edges
         - links_out: The vertices connnected to this vertex with outgoing edges
-        - neighbours: Union of links_in and links_out
         - stats: Mapping of relevant stat names to their values (e.g. engagement, display size, etc)
 
     Representation Invariants:
@@ -21,7 +20,6 @@ class _Website:
         - all([self in u.links_out for u in self.links])
     """
     domain_name: str
-    neighbours: set[_Website]
     links_in: set[_Website]
     links_out: set[_Website]
     stats: dict[str, Any]
@@ -40,7 +38,6 @@ class _Website:
         self.links_in = links_in
         self.links_out = links_out
         self.stats = stats
-        self.neighbours = links_in.union(links_out)
 
     def check_connected(self, target_item: Any, visited=None) -> Optional[list]:
         """Return a path between self and the vertex corresponding to the target_item,
@@ -62,7 +59,7 @@ class _Website:
         if self.domain_name == target_item:
             return visited
         else:
-            for u in self.neighbours:
+            for u in self.links_in.union(self.links_out):
                 if u.domain_name not in visited:
                     return u.check_connected(target_item, visited)
         return None
@@ -107,39 +104,27 @@ class _Website:
                     return u.check_directed_connected(target_item, visited)
             return None
 
-    def check_connected_distance(self, target_item: str, d: int, visited=None) -> bool:
-        """Return whether this vertex is connected to a vertex corresponding to the target_item,
-        WITHOUT using any of the vertices in visited, by a path of length <= d.
+    # def check_connected_distance(self, target_item: str, d: int, visited=None) -> bool:
+    #     """Return whether this vertex is connected to a vertex corresponding to the target_item,
+    #     WITHOUT using any of the vertices in visited, by a path of length <= d.
 
-        Preconditions:
-            - self not in visited
-            - d >= 0
-
-        >>> v1 = _Website("1", set())
-        >>> v2 = _Website("2", set())
-        >>> v3 = _Website("3", set())
-        >>> v4 = _Website("4", set())
-        >>> v5 = _Website("5", set())
-        >>> v1.neighbours = {v2, v3}
-        >>> v2.neighbours = {v3}
-        >>> v3.neighbours = {v4}
-        >>> v4.neighbours = {v5}
-        >>> v1.check_connected_distance("5", 3, set())  # Returns True: v1, v3, v4, v5
-        True
-        """
-        if visited is None:
-            visited = set()
-        if d == 0:
-            if self.domain_name == target_item:
-                return True
-            else:
-                return False
-        else:
-            for u in self.neighbours:
-                if u not in visited:
-                    if u.check_connected_distance(target_item, d - 1, visited.union({self})):
-                        return True
-            return False
+    #     Preconditions:
+    #         - self not in visited
+    #         - d >= 0
+    #     """
+    #     if visited is None:
+    #         visited = set()
+    #     if d == 0:
+    #         if self.domain_name == target_item:
+    #             return True
+    #         else:
+    #             return False
+    #     else:
+    #         for u in self.neighbours:
+    #             if u not in visited:
+    #                 if u.check_connected_distance(target_item, d - 1, visited.union({self})):
+    #                     return True
+    #         return False
 
     def check_directed_connected_distance(self, target_item: Any, d: int, visited=None) -> bool:
         """Return whether this vertex is directed connected to a vertex corresponding to the target_item,
@@ -166,9 +151,14 @@ class _Website:
 class Webgraph:
     """A directed graph that in which each vertex is a website and every edge is hyperlink from one website to another.
 
+    Instance Attributes:
+        - global_stats: Mapping of stat names to the average of their values in the graph
+        (e.g. engagement, display size, etc)
+
     Representation Invariants:
         - all(item == self._vertices[item].item for item in self._vertices)
     """
+    
     # Private Instance Attributes:
     #     - _vertices:
     #           A collection of the vertices contained in this graph.
@@ -180,11 +170,13 @@ class Webgraph:
 
     _vertices: dict[str, _Website]
     _edges: dict[tuple[str, str], dict[str, Any]]
+    global_stats: dict[str, Any]
 
     def __init__(self) -> None:
         """Initialize an empty graph (no vertices or edges)."""
         self._vertices = dict()
         self._edges = dict()
+        self.global_stats = dict()
 
     def add_vertex(self, item: str, vertex_stats=None) -> None:
         """Add a vertex with the given item and stats to this graph.
@@ -215,9 +207,6 @@ class Webgraph:
             # Add the new edge
             src_v.links_out.add(dest_v)
             dest_v.links_in.add(src_v)
-
-            src_v.neighbours.add(dest_v)
-            dest_v.neighbours.add(src_v)
 
             self._edges[(source, destination)] = edge_stats if edge_stats is not None else {}
         else:
@@ -267,19 +256,19 @@ class Webgraph:
         else:
             return None
 
-    def connected_distance(self, item1: str, item2: str, d: int) -> bool:
-        """Return whether items1 and item2 are connected by a path of length <= d.
+    # def connected_distance(self, item1: str, item2: str, d: int) -> bool:
+    #     """Return whether items1 and item2 are connected by a path of length <= d.
 
-        Return False if item1 or item2 do not appear as vertices in this graph.
+    #     Return False if item1 or item2 do not appear as vertices in this graph.
 
-        Preconditions:
-            - d >= 0
-        """
-        if item1 in self._vertices and item2 in self._vertices:
-            v1 = self._vertices[item1]
-            return v1.check_connected_distance(item2, d, set())
-        else:
-            return False
+    #     Preconditions:
+    #         - d >= 0
+    #     """
+    #     if item1 in self._vertices and item2 in self._vertices:
+    #         v1 = self._vertices[item1]
+    #         return v1.check_connected_distance(item2, d, set())
+    #     else:
+    #         return False
 
     def strongly_connected(self, item1: str, item2: str) -> tuple[
         Optional[list[_Website]], Optional[list[_Website]]
@@ -339,9 +328,10 @@ class Webgraph:
         return graph_nx
 
     def get_website_neighbours(self, item: str) -> set:
-        """Return the neighbours of the vertex with the given item."""
+        """Return the domain names of the neighbours (links in and out) of the vertex with the given item.
+        """
         if item in self._vertices:
-            return {n.domain_name for n in self._vertices[item].neighbours}
+            return {n.domain_name for n in self._vertices[item].links_in.union(self._vertices[item].links_out)}
         else:
             return set()
 
