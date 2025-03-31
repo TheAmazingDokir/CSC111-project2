@@ -16,50 +16,43 @@ import plotly.graph_objects as go
 import networkx as nx
 from dataloader_pipeline import *
 
-# Create a graph with edges
+def launch_web_graph(webgraph: cg.Webgraph, n_vertices: int) -> None:
+    """Launch the render of the updated webgraph in the browser.
+    """
+    G = webgraph.to_networkx(n_vertices)
 
-VERTICES_FILE = "data/vertices.txt"
-EDGES_FILE = "data/edges.txt"
-WEBSITE_STATS_FILE = "data/website_stats.csv"
+    # Node positions and stats
+    pos = nx.spring_layout(G)
+    # node_stats = {n: (n + 1) * 50 for n in G.nodes()}  # Sample daily_min values
 
+    # Extract edge coordinates
+    edge_x, edge_y = [], []
+    for edge in G.edges():
+        x0, y0 = pos[edge[0]]
+        x1, y1 = pos[edge[1]]
+        edge_x.extend([x0, x1, None])
+        edge_y.extend([y0, y1, None])
 
-# Loading the data
-webgraph = load_graph(VERTICES_FILE, EDGES_FILE, WEBSITE_STATS_FILE, load_with_stats_only=True)
+    # Extract node coordinates and tooltips
+    node_x, node_y, tooltips = [], [], []
+    for node in G.nodes():
+        x, y = pos[node]
+        node_x.append(x)
+        node_y.append(y)
+        # tooltips.append(f"Node {node}<br>daily_min: {node_stats[node]}")
 
-G = webgraph.to_networkx(10000)
+    # Create edge trace
+    edge_trace = go.Scatter(x=edge_x, y=edge_y, mode="lines", line=dict(width=1, color="gray"))
 
-# Node positions and stats
-pos = nx.spring_layout(G)
-# node_stats = {n: (n + 1) * 50 for n in G.nodes()}  # Sample daily_min values
+    # Create node trace with hover tooltips
+    node_trace = go.Scatter(
+        x=node_x, y=node_y, mode="markers",
+        marker=dict(size=10, color="blue"),
+        text=tooltips, hoverinfo="text"
+    )
 
-# Extract edge coordinates
-edge_x, edge_y = [], []
-for edge in G.edges():
-    x0, y0 = pos[edge[0]]
-    x1, y1 = pos[edge[1]]
-    edge_x.extend([x0, x1, None])
-    edge_y.extend([y0, y1, None])
+    # Create figure
+    fig = go.Figure(data=[edge_trace, node_trace])
+    fig.update_layout(title="Graph with Node Tooltips", showlegend=False, hovermode="closest")
 
-# Extract node coordinates and tooltips
-node_x, node_y, tooltips = [], [], []
-for node in G.nodes():
-    x, y = pos[node]
-    node_x.append(x)
-    node_y.append(y)
-    # tooltips.append(f"Node {node}<br>daily_min: {node_stats[node]}")
-
-# Create edge trace
-edge_trace = go.Scatter(x=edge_x, y=edge_y, mode="lines", line=dict(width=1, color="gray"))
-
-# Create node trace with hover tooltips
-node_trace = go.Scatter(
-    x=node_x, y=node_y, mode="markers",
-    marker=dict(size=10, color="blue"),
-    text=tooltips, hoverinfo="text"
-)
-
-# Create figure
-fig = go.Figure(data=[edge_trace, node_trace])
-fig.update_layout(title="Graph with Node Tooltips", showlegend=False, hovermode="closest")
-
-fig.show()
+    fig.show()
