@@ -7,6 +7,7 @@ import class_graph as cg
 import stats
 from visual import visualize_graph_with_stats, visualize_communities
 from dataloader_pipeline import load_graph
+import scatter_plot_gen as spg
 
 import requests as re
 from bs4 import BeautifulSoup as bs
@@ -43,6 +44,12 @@ def launch_control_panel(g: cg.Webgraph) -> None:
     for stat, var in stats_vars.items():
         chk = ttk.Checkbutton(window, text=stat, variable=var)
         chk.pack(anchor=tk.W)
+        
+    # Button to render scatter plots
+    button_scatter_plot = ttk.Button(master=window, text="Scatter Plot", padding=10,
+                                     command=lambda: spg.launch_scatter_plot(g))
+    button_scatter_plot.pack(side=tk.RIGHT)
+    
 
     # Button and text array for adding new websites
     button_quit = ttk.Button(master=window, text="Quit", padding=10, command=window.quit)
@@ -167,7 +174,7 @@ if __name__ == '__main__':
     import python_ta
     python_ta.check_all(config={
         'extra-imports': ['networkx', 'matplotlib', 'tkinter', 'class_graph', 'stats', 'visual',
-                          'dataloader_pipeline', 'requests', 'bs4'],
+                          'dataloader_pipeline', 'requests', 'bs4', 'scatter_plot_gen'],
         'allowed-io': [],
         'max-line-length': 120
     })
