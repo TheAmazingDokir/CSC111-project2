@@ -71,8 +71,8 @@ def launch_control_panel(g: cg.Webgraph) -> None:
     text_add_website.insert("1.0", "Insert URL here...")
     url = text_add_website.get("1.0", tk.END)
 
-    button_add_site = ttk.Button(master=window, text="Add Website", padding=10, command=_refresh(g, url))
-    button_add_site.pack(side=tk.RIGHT)
+    # button_add_site = ttk.Button(master=window, text="Add Website", padding=10, command=_refresh(g, url))
+    # button_add_site.pack(side=tk.RIGHT)
 
     window.update()
     window.mainloop()
@@ -137,37 +137,37 @@ def plot_selected_community_graph(g: cg.Webgraph, stats_vars: dict) -> None:
     visualize_communities(g, stats_dict)
 
 
-def _refresh(g: cg.Webgraph, url: str) -> None:
-    """Add the url's website into the graph and refresh the page."""
-    pass
+# def _refresh(g: cg.Webgraph, url: str) -> None:
+#     """Add the url's website into the graph and refresh the page."""
+#     pass
 
 
-def _scrape_website(url1: str) -> list[str]:
-    """Scrape the input website for hyperlinks.
-    Return a list of urls from the input website that are present in the input graph.
-    """
-    page = bs(re.get(url1).content, "html.parser")
-    domain_names = []
-    for a in page.find_all("a", href=True):
-        link = str(a["href"])
-        if link[0:4] != "http":
-            continue
+# def _scrape_website(url1: str) -> list[str]:
+#     """Scrape the input website for hyperlinks.
+#     Return a list of urls from the input website that are present in the input graph.
+#     """
+#     page = bs(re.get(url1).content, "html.parser")
+#     domain_names = []
+#     for a in page.find_all("a", href=True):
+#         link = str(a["href"])
+#         if link[0:4] != "http":
+#             continue
 
-        pos1 = link.find("//")
-        if pos1 == -1:
-            break
-        pos2 = link.find("/", pos1 + 2)
-        if pos2 == -1: break
+#         pos1 = link.find("//")
+#         if pos1 == -1:
+#             break
+#         pos2 = link.find("/", pos1 + 2)
+#         if pos2 == -1: break
 
-        if link[pos1 + 2: pos1 + 5] == "www":
-            domain_names.append(link[pos1 + 5: pos2])
-        else:
-            domain_names.append(link[pos1 + 2: pos2])
+#         if link[pos1 + 2: pos1 + 5] == "www":
+#             domain_names.append(link[pos1 + 5: pos2])
+#         else:
+#             domain_names.append(link[pos1 + 2: pos2])
 
-    domains_in_graph = [website.domain_name for website in g.get_vertices()]
+#     domains_in_graph = [website.domain_name for website in g.get_vertices()]
 
-    valid_links = [name for name in domain_names if name in domains_in_graph]
-    return valid_links
+#     valid_links = [name for name in domain_names if name in domains_in_graph]
+#     return valid_links
 
 
 if __name__ == '__main__':
@@ -178,5 +178,5 @@ if __name__ == '__main__':
         'allowed-io': [],
         'max-line-length': 120
     })
-    webgraph_ex = load_graph(VERTICES_FILE, EDGES_FILE, WEBSITE_STATS_FILE, True, 200)
-    launch_control_panel(webgraph_ex)
+    # webgraph_ex = load_graph(VERTICES_FILE, EDGES_FILE, WEBSITE_STATS_FILE, True, 200)
+    # launch_control_panel(webgraph_ex)
