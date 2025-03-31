@@ -1,53 +1,20 @@
-# TODO ADD TITLE HERE FOR FILE 
+"""
+CSC111 Project 2: Final Submission
 
+Module Description
+==================
+This module contains functions for calculating website engagement metrics based on graph-based data. 
+It processes various statistics such as daily minutes spent per visitor, pageviews, search traffic ratios, 
+and backlinks to compute composite scores like engagement ratings and predicted rankings. 
+The module also includes functionality to load these computed statistics into a graph structure for further analysis.
 
-
+Copyright and Usage Information
+==============================
+This file is part of the CSC111 Project 2 submission. All rights reserved.
+"""
 import math as m
 import numpy as np
 import class_graph as clg
-
-    # Sample stats representation:
-    # Website: math.toronto.edu
-    # Avg daily min: 10 (-68% global)
-    # Daily pageviews per visitor: 2304 (-38% global)
-    # Ratio of traffic from search: 5 (+98% global)
-    # Total sites linking in: 2 (-18% global)
-
-    # Given Data:
-    # daily_min: Estimated daily minutes on site per visitor to the site.
-    # daily_pageviews: Estimated daily unique pageviews per visitor on the site.
-    # traffic_ratio: The ratio of all referrals that came from Search engines over the trailing month. (e.g. 0.7)
-    # site_links: The total number of sites that are linked to this website.
-
-
-    # Display Data:
-    # daily_min: Given.
-    # daily_pageviews: Given.
-    # min_per_page: daily_min / daily_pageviews
-    # search_traffic: daily_min * traffic_ratio
-    # site_links: Given.
-    # links_traffic: daily_pageviews * log(site_links + 1)
-    # engagement_rating: (daily_min * daily_pageviews)^0.5 * ((min_per_page + search_traffic) / 2)^0.5 * (ln(links_traffic + 1))^0.5
-    # predicted_rank: Index of website when all sorted by engagement score.
-
-
-    # Global Data:
-    # global_daily_min
-    # global_daily_pageviews
-    # ....
-
-    # Layout of graph & vertices in class_graph.py:
-
-    # _Website:
-    # item: Any
-    # neighbours: set[_Website]
-    # links_in: set[_Website]
-    # links_out: set[_Website]
-    # stats: dict[str, Any]
-
-    # Webgraph:
-    # vertices: dict[Any, _Website]
-    # _edges: dict[tuple[Any, Any], dict[str, Any]]
 
 
 def calc_min_per_page(v: clg._Website) -> int:
@@ -70,6 +37,7 @@ def calc_min_per_page(v: clg._Website) -> int:
     min_per_page = daily_min / daily_pageviews
     return round(min_per_page)
 
+
 def calc_search_traffic(v: clg._Website) -> int:
     """Calculate the estimated traffic from visitors via search engines.
     
@@ -85,6 +53,7 @@ def calc_search_traffic(v: clg._Website) -> int:
 
     search_traffic = daily_min * traffic_ratio
     return round(search_traffic)
+
 
 def calc_links_traffic(v: clg._Website) -> int:
     """Calculate the estimated traffic from visitors via linking websites.
@@ -102,6 +71,7 @@ def calc_links_traffic(v: clg._Website) -> int:
 
     links_traffic = daily_pageviews * m.log(site_links + 1)
     return round(links_traffic)
+
 
 def calc_engagement_rating(v: clg._Website) -> int:
     """Calculate the overall success rating for a website based on various statistics.
@@ -132,20 +102,21 @@ def calc_engagement_rating(v: clg._Website) -> int:
     engagement_rating = overall_activity**weight1 * quality_factor**weight2 * link_influence**weight3
     return round(engagement_rating)
 
+
 def percentify(value: int, key: callable, g: clg.Webgraph) -> int:
     """Returns the percentage difference between the given statistics value and the global average from the graph.
     
     Preconditions:
-        - The graph `g` must contain vertices with valid 'daily_min', 'daily_pageviews', 'traffic_ratio', and 'site_links' stats.
+        - Graph `g` contains vertices with valid 'daily_min', 'daily_pageviews', 'traffic_ratio', 'site_links' stats.
         - The global average calculated by `key(g)` must be non-zero.
     """
     global_avg = key(g)
 
     if global_avg == 0:
         return 0
-    
     percent_diff = ((value - global_avg) / global_avg) * 100
     return round(percent_diff)
+
 
 def calc_global_daily_min(g: clg.Webgraph) -> int:
     """Calculates the global average for daily minutes on site across all vertices in the graph.
@@ -200,6 +171,7 @@ def calc_global_daily_pageviews(g: clg.Webgraph) -> int:
     avg = total / count
     return round(avg)
 
+
 def calc_global_min_per_page(g: clg.Webgraph) -> int:
     """Calculates the global average for minutes per page by using calc_min_per_page for each vertex.
     
@@ -225,6 +197,7 @@ def calc_global_min_per_page(g: clg.Webgraph) -> int:
 
     avg = total / count
     return round(avg)
+
 
 def calc_global_search_traffic(g: clg.Webgraph) -> int:
     """Calculates the global average for search traffic across all vertices.
@@ -252,6 +225,7 @@ def calc_global_search_traffic(g: clg.Webgraph) -> int:
     avg = total / count
     return round(avg)
 
+
 def calc_global_site_links(g: clg.Webgraph) -> int:
     """Calculates the global average for the total number of sites linking in across all vertices.
     
@@ -277,6 +251,7 @@ def calc_global_site_links(g: clg.Webgraph) -> int:
 
     avg = total / count
     return round(avg)
+
 
 def calc_global_links_traffic(g: clg.Webgraph) -> int:
     """Calculates the global average for links traffic across all vertices.
@@ -332,6 +307,7 @@ def calc_global_engagement_rating(g: clg.Webgraph) -> int:
     avg = total / count
     return round(avg)
 
+
 def predict_rank(g: clg.Webgraph, site: str) -> int:
     """Return the rank (index) of the specified vertex based on its engagement rating in the graph.
     
@@ -349,23 +325,21 @@ def predict_rank(g: clg.Webgraph, site: str) -> int:
     engagement_ratings = []
     for vertex in g.vertices.values():
         engagement_ratings.append((vertex.domain_name, calc_engagement_rating(vertex)))
-    
     # Sort vertices by engagement rating (in descending order)
     sorted_ratings = sorted(engagement_ratings, key=lambda x: x[1], reverse=True)
-    
     # Extract the rank of the specified site
-    for index, (site_item, rating) in enumerate(sorted_ratings):
+    for index, (site_item, _) in enumerate(sorted_ratings):
         if site_item == site:
             return index
+    return 0
 
 
-def loader(g: clg.Webgraph, stat_func: callable):
+def loader(g: clg.Webgraph, stat_func: callable) -> None:
     """Load calculated statistics into all vertices in the graph.
     
     """
     # Grab the target statistics key based on function name
     func_name = stat_func.__name__
-    
     # Special handling for predict_rank which needs graph and web name
     if func_name == 'predict_rank':
         key = 'predicted_rank'
@@ -386,7 +360,7 @@ if __name__ == '__main__':
 
     import python_ta
     python_ta.check_all(config={
-        'extra-imports': ["numpy", "math", "class_graph"],  # the names (strs) of imported modules
-        'allowed-io': [],  # the names (strs) of functions that call print/open/input
+        'extra-imports': ["numpy", "math", "class_graph"],
+        'allowed-io': [],
         'max-line-length': 120
     })
