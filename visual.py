@@ -41,8 +41,19 @@ def launch_web_graph(webgraph: cg.Webgraph, n_vertices: int) -> None:
         node_y.append(y)
         # tooltips.append(f"Node {node}<br>daily_min: {node_stats[node]}")
 
+    # Label function
+    name = lambda v: (f"Website: {v.domain_name}<br>"+
+                    f"Avg daily min: {v.stats['daily_min']}%<br>"+
+                    f"Daily pageviews per visitor: {v.stats['daily_pageviews']}%<br>"+
+                    f"Min per page: {v.stats['min_per_page']}%<br>"+
+                    f"Search traffic: {v.stats['search_traffic']}%<br>"+
+                    f"Total sites linking in: {v.stats['site_links']}<br>"+
+                    f"Links traffic: {v.stats['links_traffic']}%<br>"+
+                    f"Engagement rating: {v.stats['engagement_rating']}%<br>"+
+                    f"Predicted rank: {v.stats['predicted_rank']}%")
     # Create edge trace
-    edge_trace = go.Scatter(x=edge_x, y=edge_y, mode="lines", line=dict(width=1, color="gray"))
+    edge_trace = go.Scatter(x=edge_x, y=edge_y, mode="lines", line=dict(width=1, color="gray"), 
+                            hoverinfo=[name(G.nodes[node]) for node in G.nodes])
 
     # Create node trace with hover tooltips
     node_trace = go.Scatter(

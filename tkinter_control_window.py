@@ -7,11 +7,12 @@ import tkinter as tk
 from tkinter import ttk
 import class_graph as cg
 import stats
+import visual
 
 import requests as re
 from bs4 import BeautifulSoup as bs
 
-def launch_control_panel(g: cg.Webgraph) -> None:
+def launch_control_panel(g: cg.Webgraph, nvertices: int) -> None:
     """Launch control panel for the webgraph with buttons and inputs.
     """
     window = tk.Tk()
@@ -38,18 +39,21 @@ def launch_control_panel(g: cg.Webgraph) -> None:
 def _refresh(g: cg.Webgraph, url: str) -> None:
     """Add the url's website into the graph and refresh the page"""
     print(_search_data_for_links(g, url))
-    pass
+    visual.launch_web_graph(g, 1000)
+    
 
-def _search_data_for_links(g: cg.Webgraph, URL: str) -> list[str]:
-    """Search other websites for links towards the input website.
+def _search_data_for_links(g: cg.Webgraph, URL: str) -> tuple[list[str], list[str]]:
+    """Search other websites for links towards the input website, 
+    and scrape input website for links to websites in the graph.
+    Return as a tuple in respective order.
     """
     connected_websites = list()
     for url in [website.domain_name for website in g.get_vertices()]:
-        if URL in __scrape_website(url):
+        if URL in _scrape_website(url):
             connected_websites.append(url)
     return connected_websites
     
-def __scrape_website(URL: str) -> list[str]:
+def _scrape_website(URL: str) -> list[str]:
     """Scrape the input website for hyperlinks to other sites. Return a list of urls from the input website.
     """
     page = bs(re.get(URL).content, "html.parser")
@@ -70,27 +74,27 @@ def __scrape_website(URL: str) -> list[str]:
 
     return domain_names
   
-  
-g = cg.Webgraph()
+if __name__ == "__main__":
+    g = cg.Webgraph()
 
-launch_control_panel(g)
+    launch_control_panel(g)
 
-# g.add_vertex("maps.google.ca")
+    # g.add_vertex("maps.google.ca")
 
-# print(scrape_website(g, "https://google.com"))
+    # print(scrape_website(g, "https://google.com"))
 
-g.add_vertex(domain_name="google.com")
-g.add_vertex(domain_name="maps.google.com")
-g.add_vertex(domain_name="maps.google.ca")
+    g.add_vertex(domain_name="google.com")
+    g.add_vertex(domain_name="maps.google.com")
+    g.add_vertex(domain_name="maps.google.ca")
 
-# u = g.get_vertices[0]
-# sum = 0
+    # u = g.get_vertices[0]
+    # sum = 0
 
-# for v in g._vertices:
-#     if v == u: continue
-    
-#     path = g.directed_connected(v, u)
-    
-#     if path is not None:
-#         sum += sum([(stats.calc_engagement_rating(g._vertices[path[i]])*
-#                      ))])
+    # for v in g._vertices:
+    #     if v == u: continue
+        
+    #     path = g.directed_connected(v, u)
+        
+    #     if path is not None:
+    #         sum += sum([(stats.calc_engagement_rating(g._vertices[path[i]])*
+    #                      ))])

@@ -24,6 +24,9 @@ import networkx as nx
 import math
 import plotly.express as px
 import visual
+import tkinter_control_window as tkw
+
+
 
 # File paths
 VERTICES_FILE = "data/vertices.txt"
@@ -62,12 +65,12 @@ stats.loader(webgraph, stats.predict_rank)
 # for v in webgraph.get_vertices():
 #     normalized_degree = math.erf(len(webgraph.get_website_neighbours()))
 
-name = lambda v: (f"Website: {v.domain_name}%<br>"+
+name = lambda v: (f"Website: {v.domain_name}<br>"+
                     f"Avg daily min: {v.stats['daily_min']}%<br>"+
                     f"Daily pageviews per visitor: {v.stats['daily_pageviews']}%<br>"+
                     f"Min per page: {v.stats['min_per_page']}%<br>"+
                     f"Search traffic: {v.stats['search_traffic']}%<br>"+
-                    f"Total sites linking in: {v.stats['site_links']}%<br>"+
+                    f"Total sites linking in: {v.stats['site_links']}<br>"+
                     f"Links traffic: {v.stats['links_traffic']}%<br>"+
                     f"Engagement rating: {v.stats['engagement_rating']}%<br>"+
                     f"Predicted rank: {v.stats['predicted_rank']}%")
@@ -92,13 +95,16 @@ fig.show()
 # fig.show()
 # NO CORRELATION
 
-sorted_vertex_list = sorted(webgraph.get_vertices(), key=lambda v: v.stats["engagement_rating"], reverse=True)
+sorted_vertex_list = sorted(webgraph.get_vertices(), key=lambda v: v.stats["engagement_rating"], reverse=False)
 for v in sorted_vertex_list:
     print(v.domain_name, v.stats["engagement_rating"])
     
 
 
-# visual.launch_web_graph(webgraph, 1000)
+visual.launch_web_graph(webgraph, 1000)
+
+tkw.launch_control_panel(webgraph, 1000)
+
 
 
 if __name__ == '__main__':
