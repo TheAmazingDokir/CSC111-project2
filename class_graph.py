@@ -28,7 +28,8 @@ class _Website:
 
     def __init__(self, domain_name: str, links_in=None, links_out=None,
                  stats=None) -> None:
-        """Initialize a new vertex with the given item, links_in and links_out, and stats."""
+        """Initialize a new vertex with the given item, links_in and links_out, and stats.
+        """
         if links_out is None:
             links_out = set()
         if links_in is None:

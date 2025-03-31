@@ -5,7 +5,7 @@ def load_graph(vertices_file: str, edges_file: str, website_stats_file: str, loa
     """
     Load a web graph from the given files.
 
-    Instance Attributes:
+    Arguments:
         - vertices_file: The path to the file containing the vertices information.
         - edges_file: The path to the file containing the edges information.
         - website_stats_file: The path to the file containing the website statistics.
