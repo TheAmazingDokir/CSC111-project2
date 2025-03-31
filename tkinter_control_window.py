@@ -47,7 +47,7 @@ def launch_control_panel(g: cg.Webgraph) -> None:
         
     # Button to render scatter plots
     button_scatter_plot = ttk.Button(master=window, text="Scatter Plot", padding=10,
-                                     command=lambda: spg.launch_scatter_plot(g))
+                                     command=lambda: spg.render_scatter(g))
     button_scatter_plot.pack(side=tk.RIGHT)
     
 

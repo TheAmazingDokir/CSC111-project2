@@ -164,6 +164,8 @@ def calc_neighbour_largest_in_degree(v: clg.Website) -> float:
         return 0.0
 
     in_degrees = [calc_in_degree(neighbour) for neighbour in v.links_out]
+    if not in_degrees:
+        return 0.0
     return max(in_degrees)
 
 def calc_popularity_per_degree(v: clg.Website) -> float:
