@@ -1,3 +1,21 @@
+"""
+CSC111 Project 2: Final Submission
+
+Module Description
+==================
+This is the main execution module for the website engagement analysis system. It handles:
+1. Loading graph data from multiple sources (vertices, edges, and website statistics files)
+2. Calculating global engagement metrics across all websites in the graph
+3. Updating individual website vertices with key performance indicators
+4. Generating interactive visualizations of the web graph structure using Plotly
+
+The module serves as the entry point for the analysis pipeline, coordinating data loading, 
+statistical calculations, and visualization components.
+
+Copyright and Usage Information
+==============================
+This file is part of the CSC111 Project 2 submission. All rights reserved.
+"""
 from class_graph import Webgraph
 from dataloader_pipeline import load_graph
 import stats
@@ -35,7 +53,7 @@ stats.loader(webgraph, stats.predict_rank)
 #
 # for v in webgraph.get_vertices():
 #     normalized_degree = math.erf(len(webgraph.get_website_neighbours()))
-for 
+
 
 G = webgraph.to_networkx(300)
 
