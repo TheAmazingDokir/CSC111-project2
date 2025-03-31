@@ -71,7 +71,7 @@ def calc_min_per_page(v: clg._Website) -> int:
     return round(min_per_page)
 
 def calc_search_traffic(v: clg._Website) -> int:
-    """Calculate the estimated traffic (minutes) from visitors via search engines.
+    """Calculate the estimated traffic from visitors via search engines.
     
     Preconditions:
         - 'daily_min' and 'traffic_ratio' are in v.stats.keys()
@@ -87,7 +87,7 @@ def calc_search_traffic(v: clg._Website) -> int:
     return round(search_traffic)
 
 def calc_links_traffic(v: clg._Website) -> int:
-    """Calculate the estimated traffic (minutes) from visitors via linking websites.
+    """Calculate the estimated traffic from visitors via linking websites.
     
     Preconditions:
         - 'daily_pageviews' and 'site_links' are in v.stats
@@ -227,7 +227,7 @@ def calc_global_min_per_page(g: clg.Webgraph) -> int:
     return round(avg)
 
 def calc_global_search_traffic(g: clg.Webgraph) -> int:
-    """Calculates the global average for search traffic (in minutes) across all vertices.
+    """Calculates the global average for search traffic across all vertices.
     
     Preconditions:
         - Each vertex has 'daily_min' and 'traffic_ratio' in its stats.
@@ -279,7 +279,7 @@ def calc_global_site_links(g: clg.Webgraph) -> int:
     return round(avg)
 
 def calc_global_links_traffic(g: clg.Webgraph) -> int:
-    """Calculates the global average for links traffic (in minutes) across all vertices.
+    """Calculates the global average for links traffic across all vertices.
     
     Preconditions:
         - Each vertex has 'daily_pageviews' and 'site_links' in its stats.
