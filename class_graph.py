@@ -154,27 +154,25 @@ class Webgraph:
     Instance Attributes:
         - global_stats: Mapping of stat names to the average of their values in the graph
         (e.g. engagement, display size, etc)
+        - vertices: A collection of the vertices contained in this graph. Maps item to _Vertex object.
 
     Representation Invariants:
-        - all(item == self._vertices[item].item for item in self._vertices)
+        - all(item == self.vertices[item].item for item in self.vertices)
     """
-    
+
     # Private Instance Attributes:
-    #     - _vertices:
-    #           A collection of the vertices contained in this graph.
-    #         Maps item to _Vertex object.
     #     - _edges:
     #           A collection of the edges contained in this graph.
     #           Maps ordered tuples of items to a dict of stats attatched to the edge
     #           between the vertices with the items.
 
-    _vertices: dict[str, _Website]
+    vertices: dict[str, _Website]
     _edges: dict[tuple[str, str], dict[str, Any]]
     global_stats: dict[str, Any]
 
     def __init__(self) -> None:
         """Initialize an empty graph (no vertices or edges)."""
-        self._vertices = dict()
+        self.vertices = dict()
         self._edges = dict()
         self.global_stats = dict()
 
@@ -184,12 +182,12 @@ class Webgraph:
         The new vertex is not adjacent to any other vertices.
 
         Preconditions:
-            - item not in self._vertices
+            - item not in self.vertices
         """
         if vertex_stats is None:
             vertex_stats = dict()
-        if item not in self._vertices:
-            self._vertices[item] = _Website(item, stats=vertex_stats)
+        if item not in self.vertices:
+            self.vertices[item] = _Website(item, stats=vertex_stats)
 
     def add_edge(self, source: str, destination: str, edge_stats: Optional[dict[str, Any]] = None) -> None:
         """Add an edge from one vertex to the other with the respective items in this graph.
@@ -200,9 +198,9 @@ class Webgraph:
         Preconditions:
             - source != destination
         """
-        if source in self._vertices and destination in self._vertices:
-            src_v = self._vertices[source]
-            dest_v = self._vertices[destination]
+        if source in self.vertices and destination in self.vertices:
+            src_v = self.vertices[source]
+            dest_v = self.vertices[destination]
 
             # Add the new edge
             src_v.links_out.add(dest_v)
@@ -218,8 +216,8 @@ class Webgraph:
 
         Return False if item1 or item2 do not appear as vertices in this graph.
         """
-        if item1 in self._vertices and item2 in self._vertices:
-            v1 = self._vertices[item1]
+        if item1 in self.vertices and item2 in self.vertices:
+            v1 = self.vertices[item1]
             return any(v2.domain_name == item2 for v2 in v1.links_out)
         else:
             return False
@@ -234,8 +232,8 @@ class Webgraph:
 
         Return None if item1 or item2 do not appear as vertices in this graph.
         """
-        if item1 in self._vertices and item2 in self._vertices:
-            v1 = self._vertices[item1]
+        if item1 in self.vertices and item2 in self.vertices:
+            v1 = self.vertices[item1]
             return v1.check_connected(item2)
         else:
             return None
@@ -250,8 +248,8 @@ class Webgraph:
 
         Return False if item1 or item2 do not appear as vertices in this graph.
         """
-        if item1 in self._vertices and item2 in self._vertices:
-            v1 = self._vertices[item1]
+        if item1 in self.vertices and item2 in self.vertices:
+            v1 = self.vertices[item1]
             return v1.check_directed_connected(item2)
         else:
             return None
@@ -264,8 +262,8 @@ class Webgraph:
     #     Preconditions:
     #         - d >= 0
     #     """
-    #     if item1 in self._vertices and item2 in self._vertices:
-    #         v1 = self._vertices[item1]
+    #     if item1 in self.vertices and item2 in self.vertices:
+    #         v1 = self.vertices[item1]
     #         return v1.check_connected_distance(item2, d, set())
     #     else:
     #         return False
@@ -287,12 +285,12 @@ class Webgraph:
         # """
         """Return a list of the vertices in this graph.
         """
-        return list(self._vertices.values())
+        return list(self.vertices.values())
 
     def num_vertices(self) -> int:
         """Return the number of vertices in this graph.
         """
-        return len(self._vertices)
+        return len(self.vertices)
 
     def get_edges(self) -> list[tuple[str, str]]:
         # """Return a view object of the dictionary of edge stats associated with each edge.
@@ -315,7 +313,7 @@ class Webgraph:
         The stats (dict) of a DiGraph G returned by this method can be accessed with G.nodes["item"]["stat_name"]
         """
         graph_nx = nx.DiGraph()
-        for v in self._vertices.values():
+        for v in self.vertices.values():
             graph_nx.add_node(v.domain_name, links_in=v.links_in, links_out=v.links_out, stats=v.stats)
 
             for (item1, item2) in self._edges:
@@ -330,8 +328,8 @@ class Webgraph:
     def get_website_neighbours(self, item: str) -> set:
         """Return the domain names of the neighbours (links in and out) of the vertex with the given item.
         """
-        if item in self._vertices:
-            return {n.domain_name for n in self._vertices[item].links_in.union(self._vertices[item].links_out)}
+        if item in self.vertices:
+            return {n.domain_name for n in self.vertices[item].links_in.union(self.vertices[item].links_out)}
         else:
             return set()
 
