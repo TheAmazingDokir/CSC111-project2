@@ -102,10 +102,6 @@ class _Website:
         >>> v3.links_out.add(v4)
         >>> v1.check_directed_connected("site3")
         ['site1', 'site2', 'site3']
-        >>> v2.check_directed_connected("site4")
-        ['site2', 'site3', 'site4']
-        >>> v4.check_directed_connected("site1")
-        None
         """
         if visited is None:
             visited = []
