@@ -1,74 +1,143 @@
-"""
-CSC111 Project 2: Final Submission
-
-Module Description
-==================
-This module contains functions for the graph's control panel, allowing the user to input a website
-URL and add it to the graph. Links to and from the input site are scraped, added to the dataset,
-and the page is refreshed.
-
-Copyright and Usage Information
-==============================
-This file is part of the CSC111 Project 2 submission and Copyright (c) 2025 of Kyrylo Degtiarenko,
-Samuel Joseph Iacobazzi, Arkhyp Boryshkevych, and John DiMatteo. All rights reserved.
-Usage by CSC111 teaching team permitted.
-"""
+import networkx as nx
+import matplotlib
+matplotlib.use('TkAgg')
 import tkinter as tk
 from tkinter import ttk
-import matplotlib
-import visual
+import class_graph as cg
+import stats
+from visual import visualize_graph_with_stats, visualize_communities
+from dataloader_pipeline import load_graph
 
 import requests as re
 from bs4 import BeautifulSoup as bs
-import class_graph as cg
 
-matplotlib.use('TkAgg')
+VERTICES_FILE = "data/vertices.txt"
+EDGES_FILE = "data/edges.txt"
+WEBSITE_STATS_FILE = "data/website_stats.csv"
 
 
-def launch_control_panel(g3: cg.Webgraph, nvertices: int) -> None:
-    """Launch control panel for the webgraph with buttons and inputs.
-    """
+def launch_control_panel(g: cg.Webgraph) -> None:
+    """Launch control panel for the webgraph with buttons and inputs."""
     window = tk.Tk()
     window.wm_title("Graph Control Window")
 
-    #
-    #   Button and text array for adding new websites
-    #
+    # Checkboxes for statistics
+    stats_vars = {
+        'Min per Page': tk.BooleanVar(),
+        'Search Traffic': tk.BooleanVar(),
+        'Links Traffic': tk.BooleanVar(),
+        'Engagement Rating': tk.BooleanVar(),
+        'Predicted Rank': tk.BooleanVar(),
+        'Degree': tk.BooleanVar(),
+        'In Degree': tk.BooleanVar(),
+        'Out Degree': tk.BooleanVar(),
+        'Neighbours Avg Popularity': tk.BooleanVar(),
+        'Neighbour Largest In Degree': tk.BooleanVar(),
+        'Popularity per Degree': tk.BooleanVar(),
+        'Popularity per Neighbours Avg Popularity': tk.BooleanVar(),
+        'Popularity per Neighbour Largest In Degree': tk.BooleanVar(),
+        'Harmonic Centrality': tk.BooleanVar(),
+        'PageRank': tk.BooleanVar()
+    }
+
+    for stat, var in stats_vars.items():
+        chk = ttk.Checkbutton(window, text=stat, variable=var)
+        chk.pack(anchor=tk.W)
+
+    # Button and text array for adding new websites
     button_quit = ttk.Button(master=window, text="Quit", padding=10, command=window.quit)
     button_quit.pack(side=tk.RIGHT)
 
+    # Button to plot the graph with separate communities
+    button_plot_graph = ttk.Button(master=window, text="Plot Communities", padding=10,
+                                   command=lambda: plot_selected_community_graph(g, stats_vars))
+    button_plot_graph.pack(side=tk.RIGHT)
+
+    # Button to plot the graph
+    button_plot_graph = ttk.Button(master=window, text="Plot Graph", padding=10,
+                                   command=lambda: plot_selected_graph(g, stats_vars))
+    button_plot_graph.pack(side=tk.RIGHT)
+
     text_add_website = tk.Text(master=window, width=50, height=1, padx=10, pady=10)
-    text_add_website.insert("1.0", "Insert URL here...")
     text_add_website.pack()
 
-    button_add_site = ttk.Button(master=window, text="Add Website", padding=10,
-                                 command=lambda: _refresh(g3, text_add_website.get("1.0", tk.END)))
+    text_add_website.insert("1.0", "Insert URL here...")
+    url = text_add_website.get("1.0", tk.END)
+
+    button_add_site = ttk.Button(master=window, text="Add Website", padding=10, command=_refresh(g, url))
     button_add_site.pack(side=tk.RIGHT)
 
     window.update()
     window.mainloop()
 
 
-def _refresh(g1: cg.Webgraph, url: str) -> None:
-    """Add the url's website into the graph and refresh the page"""
-    print(_search_data_for_links(g1, url))
-    visual.launch_web_graph(g1, 10000)
-    
+def get_selected_stats(stats_vars: dict) -> list:
+    """Return a list of selected statistics based on the checkboxes."""
+    selected_stats = [stat for stat, var in stats_vars.items() if var.get()]
+    return selected_stats
 
-def _search_data_for_links(g2: cg.Webgraph, URL: str) -> tuple[list[str], list[str]]:
-    """Search other websites for links towards the input website, 
-    and scrape input website for links to websites in the graph.
-    Return as a tuple in respective order.
-    """
-    connected_websites = []
-    for domain in [website.domain_name for website in g2.get_vertices()]:
-        if domain in _scrape_website(domain):
-            connected_websites.append(domain)
-    return connected_websites
+
+def calculate_selected_stats(webgraph: cg.Webgraph, selected_stats: list) -> dict:
+    """Return a dictionary with each domain name and its calculated statistics for all selected stats."""
+    stats_functions = {
+        'Min per Page': lambda g, v: stats.calc_min_per_page(v),
+        'Search Traffic': lambda g, v: stats.calc_search_traffic(v),
+        'Links Traffic': lambda g, v: stats.calc_links_traffic(v),
+        'Engagement Rating': lambda g, v: stats.calc_engagement_rating(v),
+        'Predicted Rank': lambda g, v: stats.predict_rank(g, v.domain_name),
+        'Degree': lambda g, v: stats.calc_degree(v),
+        'In Degree': lambda g, v: stats.calc_in_degree(v),
+        'Out Degree': lambda g, v: stats.calc_out_degree(v),
+        'Neighbours Avg Popularity': lambda g, v: stats.calc_neighbours_avg_popularity(v),
+        'Neighbour Largest In Degree': lambda g, v: stats.calc_neighbour_largest_in_degree(v),
+        'Popularity per Degree': lambda g, v: stats.calc_popularity_per_degree(v),
+        'Popularity per Neighbours Avg Popularity': lambda g, v: stats.calc_popularity_per_neighbours_avg_popularity(v),
+        'Popularity per Neighbour Largest In Degree':
+            lambda g, v: stats.calc_popularity_per_neighbour_largest_in_degree(v),
+        'Harmonic Centrality': lambda g, v: round(stats.calc_harmonic_centrality(g)[v.domain_name], 2),
+        'PageRank': lambda g, v: round(stats.calc_page_rank(g)[v.domain_name], 2)
+    }
+
+    calculated_stats = {}
+    for vertex in webgraph.get_vertices():
+        domain_name = vertex.domain_name
+        calculated_stats[domain_name] = {}
+        for stat in selected_stats:
+            if stat in stats_functions:
+                calculated_stats[domain_name][stat] = stats_functions[stat](webgraph, vertex)
+
+    for vertex in webgraph.get_vertices():
+        domain_name = vertex.domain_name
+        if domain_name in calculated_stats:
+            for stat in selected_stats:
+                if stat in stats_functions:
+                    calculated_stats[domain_name][stat] = stats_functions[stat](webgraph, vertex)
+
+    return calculated_stats
+
+
+def plot_selected_graph(g: cg.Webgraph, stats_vars: dict) -> None:
+    """Calculate selected stats and plot the graph."""
+    selected_stats = get_selected_stats(stats_vars)
+    stats_dict = calculate_selected_stats(g, selected_stats)
+    visualize_graph_with_stats(g, stats_dict, True)
+
+
+def plot_selected_community_graph(g: cg.Webgraph, stats_vars: dict) -> None:
+    """Calculate selected stats and plot the graph."""
+    selected_stats = get_selected_stats(stats_vars)
+    stats_dict = calculate_selected_stats(g, selected_stats)
+    visualize_communities(g, stats_dict)
+
+
+def _refresh(g: cg.Webgraph, url: str) -> None:
+    """Add the url's website into the graph and refresh the page."""
+    pass
 
 
 def _scrape_website(url1: str) -> list[str]:
-    """Scrape the input website for hyperlinks to other sites. Return a list of urls from the input website.
+    """Scrape the input website for hyperlinks.
+    Return a list of urls from the input website that are present in the input graph.
     """
     page = bs(re.get(url1).content, "html.parser")
     domain_names = []
@@ -81,37 +150,26 @@ def _scrape_website(url1: str) -> list[str]:
         if pos1 == -1:
             break
         pos2 = link.find("/", pos1 + 2)
-        if pos2 == -1:
-            break
+        if pos2 == -1: break
 
         if link[pos1 + 2: pos1 + 5] == "www":
             domain_names.append(link[pos1 + 5: pos2])
         else:
             domain_names.append(link[pos1 + 2: pos2])
 
-    return domain_names
+    domains_in_graph = [website.domain_name for website in g.get_vertices()]
+
+    valid_links = [name for name in domain_names if name in domains_in_graph]
+    return valid_links
+
 
 if __name__ == '__main__':
-    # import doctest
-    # doctest.testmod()
-
     import python_ta
-
     python_ta.check_all(config={
-        'extra-imports': ['csv', 'class_graph', 'matplotlib', 'tkinter', 'requests', 'bs4'],
-        'allowed-io': ['_refresh', 'load_vertex_mappings', 'load_website_stats', 'load_edges'],
+        'extra-imports': ['networkx', 'matplotlib', 'tkinter', 'class_graph', 'stats', 'visual',
+                          'dataloader_pipeline', 'requests', 'bs4'],
+        'allowed-io': [],
         'max-line-length': 120
     })
-    
-    
-    # u = g.get_vertices[0]
-    # sum = 0
-
-    # for v in g._vertices:
-    #     if v == u: continue
-    
-    #     path = g.directed_connected(v, u)
-    
-    #     if path is not None:
-    #         sum += sum([(stats.calc_engagement_rating(g._vertices[path[i]])*
-    #                      ))])
+    webgraph_ex = load_graph(VERTICES_FILE, EDGES_FILE, WEBSITE_STATS_FILE, True, 200)
+    launch_control_panel(webgraph_ex)
