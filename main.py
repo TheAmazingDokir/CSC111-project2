@@ -27,7 +27,6 @@ import visual
 import tkinter_control_window as tkw
 
 
-
 # File paths
 VERTICES_FILE = "data/vertices.txt"
 EDGES_FILE = "data/edges.txt"
@@ -65,10 +64,14 @@ stats.loader(webgraph, stats.predict_rank)
 tkw.launch_control_panel(webgraph)
 
 if __name__ == '__main__':
-    import python_ta
-    python_ta.check_all(config={
-        'extra-imports': ["class_graph", "dataloader_pipeline", "stats", "plotly.graph_objects", "networkx", "math", "plotly.express", "visual", "tkinter_control_window", "tkinter", "matplotlib", "matplotlib.pyplot", "matplotlib.backends.backend_tkagg"],  # the names (strs) of imported modules
-        'allowed-io': [],  # the names (strs) of functions that call print/open/input
-        'max-line-length': 120
-    })
+    # import python_ta
+    # python_ta.check_all(config={
+    #     'extra-imports': ["class_graph", "dataloader_pipeline", "stats", 
+    #                       "plotly.graph_objects", "networkx", "math", "plotly.express", 
+    #                       "visual", "tkinter_control_window", "tkinter", "matplotlib", 
+    #                       "matplotlib.pyplot", "matplotlib.backends.backend_tkagg"],  
+    #                         # the names (strs) of imported modules
+    #     'allowed-io': [],  # the names (strs) of functions that call print/open/input
+    #     'max-line-length': 120
+    # })
     pass

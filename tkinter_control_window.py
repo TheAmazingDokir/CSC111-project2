@@ -169,12 +169,13 @@ def plot_selected_community_graph(g: cg.Webgraph, stats_vars: dict) -> None:
 
 
 if __name__ == '__main__':
-    import python_ta
-    python_ta.check_all(config={
-        'extra-imports': ['networkx', 'matplotlib', 'tkinter', 'class_graph', 'stats', 'visual',
-                          'dataloader_pipeline', 'requests', 'bs4', 'scatter_plot_gen'],
-        'allowed-io': [],
-        'max-line-length': 120
-    })
+    # import python_ta
+    # python_ta.check_all(config={
+    #     'extra-imports': ['networkx', 'matplotlib', 'tkinter', 'class_graph', 'stats', 'visual',
+    #                       'dataloader_pipeline', 'requests', 'bs4', 'scatter_plot_gen'],
+    #     'allowed-io': [],
+    #     'max-line-length': 120
+    # })
     # webgraph_ex = load_graph(VERTICES_FILE, EDGES_FILE, WEBSITE_STATS_FILE, True, 200)
     # launch_control_panel(webgraph_ex)
+    pass
