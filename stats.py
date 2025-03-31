@@ -12,7 +12,6 @@ Copyright and Usage Information
 ==============================
 This file is part of the CSC111 Project 2 submission. All rights reserved.
 """
-import math as m
 import numpy as np
 import class_graph as clg
 
@@ -39,24 +38,23 @@ def calc_min_per_page(v: clg._Website) -> int:
 
 
 def calc_search_traffic(v: clg._Website) -> int:
-    """Calculate the estimated traffic from visitors via search engines.
+    """Calculate the estimated traffic contribution from visitors via search engines.
     
     Preconditions:
         - 'daily_min' and 'traffic_ratio' are in v.stats.keys()
     
     >>> v = clg._Website('example.com', stats={'daily_min': 10, 'traffic_ratio': 0.5})
     >>> calc_search_traffic(v)
-    5
+    50
     """
-    daily_min = v.stats["daily_min"]
     traffic_ratio = v.stats["traffic_ratio"]
 
-    search_traffic = daily_min * traffic_ratio
+    search_traffic = traffic_ratio * 100
     return round(search_traffic)
 
 
 def calc_links_traffic(v: clg._Website) -> int:
-    """Calculate the estimated traffic from visitors via linking websites.
+    """Calculate the estimated traffic contribution from visitors via linking websites.
     
     Preconditions:
         - 'daily_pageviews' and 'site_links' are in v.stats
@@ -64,12 +62,12 @@ def calc_links_traffic(v: clg._Website) -> int:
     
     >>> v = clg._Website('example.com', stats={'daily_pageviews': 100, 'site_links': 10})
     >>> calc_links_traffic(v)
-    240
+    9
     """
     daily_pageviews = v.stats["daily_pageviews"]
     site_links = v.stats["site_links"]
 
-    links_traffic = daily_pageviews * m.log(site_links + 1)
+    links_traffic = (site_links / (site_links + daily_pageviews)) * 100
     return round(links_traffic)
 
 
@@ -83,7 +81,7 @@ def calc_engagement_rating(v: clg._Website) -> int:
     
     >>> v = clg._Website('example.com', stats={'daily_min': 10, 'daily_pageviews': 5, 'traffic_ratio': 0.5, 'site_links': 10})
     >>> calc_engagement_rating(v)
-    21
+    74
     """
     daily_min = v.stats["daily_min"]
     daily_pageviews = v.stats["daily_pageviews"]
@@ -209,7 +207,7 @@ def calc_global_search_traffic(g: clg.Webgraph) -> int:
     >>> g.add_vertex('site1', {'daily_min': 10, 'traffic_ratio': 0.5})
     >>> g.add_vertex('site2', {'daily_min': 20, 'traffic_ratio': 0.3})
     >>> calc_global_search_traffic(g)
-    6
+    40
     """
     vertices = g.vertices.values()
     count = 0
@@ -263,7 +261,7 @@ def calc_global_links_traffic(g: clg.Webgraph) -> int:
     >>> g.add_vertex('site1', {'daily_pageviews': 100, 'site_links': 10})
     >>> g.add_vertex('site2', {'daily_pageviews': 200, 'site_links': 20})
     >>> calc_global_links_traffic(g)
-    424
+    9
     """
     vertices = g.vertices.values()
     count = 0
@@ -291,7 +289,7 @@ def calc_global_engagement_rating(g: clg.Webgraph) -> int:
     >>> g.add_vertex('site1', {'daily_min': 10, 'daily_pageviews': 5, 'traffic_ratio': 0.5, 'site_links': 10})
     >>> g.add_vertex('site2', {'daily_min': 20, 'daily_pageviews': 10, 'traffic_ratio': 0.3, 'site_links': 15})
     >>> calc_global_engagement_rating(g)
-    36
+    94
     """
     vertices = g.vertices.values()
     count = 0
