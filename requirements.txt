@@ -3,6 +3,6 @@ numpy
 matplotlib
 plotly
 python-ta
-tkinter
 requests
-bs4
+beautifulsoup4
+tkinter
