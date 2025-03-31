@@ -80,6 +80,21 @@ class _Website:
 
         Preconditions:
             - self not in visited
+            
+        >>> v1 = _Website("site1")
+        >>> v2 = _Website("site2")
+        >>> v3 = _Website("site3")
+        >>> v4 = _Website("site4")
+        >>> v1.links_out.add(v2)
+        >>> v2.links_out.add(v3)
+        >>> v3.links_out.add(v1)
+        >>> v3.links_out.add(v4)
+        >>> v1.check_directed_connected("site3")
+        ['site1', 'site2', 'site3']
+        >>> v2.check_directed_connected("site4")
+        ['site2', 'site3', 'site4']
+        >>> v4.check_directed_connected("site1")
+        None
         """
         if visited is None:
             visited = list()
@@ -279,21 +294,27 @@ class Webgraph:
         return (path_1, path_2)
 
     def get_vertices(self) -> list[_Website]:
-        """Return a view object of the dictionary of vertex stats associated with each vertex.
+        # """Return a view object of the dictionary of vertex stats associated with each vertex.
+        # """
+        """Return a list of the vertices in this graph.
         """
         return list(self._vertices.values())
 
     def num_vertices(self) -> int:
-        """Return the number of vertices in this graph."""
+        """Return the number of vertices in this graph.
+        """
         return len(self._vertices)
 
     def get_edges(self) -> list[tuple[str, str]]:
-        """Return a view object of the dictionary of edge stats associated with each edge.
+        # """Return a view object of the dictionary of edge stats associated with each edge.
+        # """
+        """Return a list of the edges in this graph.
         """
         return list(self._edges.keys())
 
     def num_edges(self) -> int:
-        """Return the number of edges in this graph."""
+        """Return the number of edges in this graph.
+        """
         return len(self._edges)
 
     def to_networkx(self, max_vertices: int = 5000) -> nx.DiGraph:

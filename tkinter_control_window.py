@@ -25,12 +25,13 @@ def launch_control_panel(g: cg.Webgraph) -> None:
     button_quit.pack(side=tk.RIGHT)
     
     text_add_website = tk.Text(master=window, width=50, height=1, padx=10, pady=10)
-    text_add_website.pack()
-
     text_add_website.insert("1.0", "Insert URL here...")
+    text_add_website.pack()
+    
     url = text_add_website.get("1.0", tk.END)
     
-    button_add_site = ttk.Button(master=window, text="Add Website", padding=10, command=_refresh(g, url))
+    button_add_site = ttk.Button(master=window, text="Add Website", padding=10, 
+                                 command=lambda: _refresh(g, url))
     button_add_site.pack(side=tk.RIGHT)
     
     window.update()
@@ -38,36 +39,45 @@ def launch_control_panel(g: cg.Webgraph) -> None:
     
 def _refresh(g: cg.Webgraph, url: str) -> None:
     """Add the url's website into the graph and refresh the page"""
+    print(url)
     pass
 
-def _scrape_website(g: cg.Webgraph, URL: str) -> list[str]:
-    """Scrape the input website for hyperlinks. 
-    Return a list of urls from the input website that are present in the input graph.
+def _search_graph(g: cg.Webgraph, URL: str) -> list[str]:
+    """Search other websites for links towards the input website.
     """
-    page = bs(re.get(URL).content, "html.parser")
-    domain_names = list()
-    for a in page.find_all("a", href=True):
-        link = str(a["href"])
-        if link[0:4] != "http": continue
-        
-        pos1 = link.find("//")
-        if pos1 == -1: break
-        pos2 = link.find("/", pos1 + 2)
-        if pos2 == -1: break
-        
-        if link[pos1 + 2: pos1 + 5] == "www":
-            domain_names.append(link[pos1 + 5: pos2])
-        else:
-            domain_names.append(link[pos1 + 2: pos2])
+    connected_websites = list()
+    for url in [website.domain_name for website in g.get_vertices()]:
+        if URL in 
     
-    domains_in_graph = [website.domain_name for website in g.get_vertices()]
+    # """Scrape the input website for hyperlinks. 
+    # Return a list of urls from the input website that are present in the input graph.
+    # """
+    # page = bs(re.get(URL).content, "html.parser")
+    # domain_names = list()
+    # for a in page.find_all("a", href=True):
+    #     link = str(a["href"])
+    #     if link[0:4] != "http": continue
+        
+    #     pos1 = link.find("//")
+    #     if pos1 == -1: break
+    #     pos2 = link.find("/", pos1 + 2)
+    #     if pos2 == -1: break
+        
+    #     if link[pos1 + 2: pos1 + 5] == "www":
+    #         domain_names.append(link[pos1 + 5: pos2])
+    #     else:
+    #         domain_names.append(link[pos1 + 2: pos2])
     
-    valid_links = [name for name in domain_names if name in domains_in_graph]
-    return valid_links
+    # domains_in_graph = [website.domain_name for website in g.get_vertices()]
+    
+    # valid_links = [name for name in domain_names if name in domains_in_graph]
+    # return valid_links
   
-launch_control_panel(cg.Webgraph())
-
+  
 g = cg.Webgraph()
+
+launch_control_panel(g)
+
 # g.add_vertex("maps.google.ca")
 
 # print(scrape_website(g, "https://google.com"))
@@ -76,10 +86,14 @@ g.add_vertex(domain_name="google.com")
 g.add_vertex(domain_name="maps.google.com")
 g.add_vertex(domain_name="maps.google.ca")
 
-vertices = g.get_vertices()
-u = vertices[0]
-sum = 0
-for v in vertices:
+# u = g.get_vertices[0]
+# sum = 0
+
+# for v in g._vertices:
+#     if v == u: continue
     
-    if g.strongly_connected(u.domain_name, v.domain_name):
-        sum += stats.calc_engagement_rating(v)
+#     path = g.directed_connected(v, u)
+    
+#     if path is not None:
+#         sum += sum([(stats.calc_engagement_rating(g._vertices[path[i]])*
+#                      ))])
