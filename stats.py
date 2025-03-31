@@ -16,7 +16,7 @@ import numpy as np
 import class_graph as clg
 
 
-def calc_min_per_page(v: clg._Website) -> int:
+def calc_min_per_page(v: clg._Website) -> float:
     """Calculate the estimated average minutes spent per page.
     
     Preconditions:
@@ -34,10 +34,10 @@ def calc_min_per_page(v: clg._Website) -> int:
         raise ValueError("daily_pageviews can't be zero.")
 
     min_per_page = daily_min / daily_pageviews
-    return round(min_per_page)
+    return round(min_per_page, 2)
 
 
-def calc_search_traffic(v: clg._Website) -> int:
+def calc_search_traffic(v: clg._Website) -> float:
     """Calculate the estimated traffic contribution from visitors via search engines.
     
     Preconditions:
@@ -50,7 +50,7 @@ def calc_search_traffic(v: clg._Website) -> int:
     traffic_ratio = v.stats["traffic_ratio"]
 
     search_traffic = traffic_ratio * 100
-    return round(search_traffic)
+    return round(search_traffic, 2)
 
 
 def calc_links_traffic(v: clg._Website) -> float:
@@ -71,7 +71,7 @@ def calc_links_traffic(v: clg._Website) -> float:
     return round(links_traffic, 2)
 
 
-def calc_engagement_rating(v: clg._Website) -> int:
+def calc_engagement_rating(v: clg._Website) -> float:
     """Calculate the overall success rating for a website based on various statistics.
     
     Preconditions:
@@ -98,10 +98,10 @@ def calc_engagement_rating(v: clg._Website) -> int:
     link_influence = np.log(links_traffic + 1)
 
     engagement_rating = overall_activity**weight1 * quality_factor**weight2 * link_influence**weight3
-    return round(engagement_rating)
+    return round(engagement_rating, 2)
 
 
-def percentify(value: int, key: callable, g: clg.Webgraph) -> int:
+def percentify(value: int, key: callable, g: clg.Webgraph) -> float:
     """Returns the percentage difference between the given statistics value and the global average from the graph.
     
     Preconditions:
@@ -113,10 +113,10 @@ def percentify(value: int, key: callable, g: clg.Webgraph) -> int:
     if global_avg == 0:
         return 0
     percent_diff = ((value - global_avg) / global_avg) * 100
-    return round(percent_diff)
+    return round(percent_diff, 2)
 
 
-def calc_global_daily_min(g: clg.Webgraph) -> int:
+def calc_global_daily_min(g: clg.Webgraph) -> float:
     """Calculates the global average for daily minutes on site across all vertices in the graph.
     
     Preconditions:
@@ -140,10 +140,10 @@ def calc_global_daily_min(g: clg.Webgraph) -> int:
         return 0
 
     avg = total / count
-    return round(avg)
+    return round(avg, 2)
 
 
-def calc_global_daily_pageviews(g: clg.Webgraph) -> int:
+def calc_global_daily_pageviews(g: clg.Webgraph) -> float:
     """Calculates the global average for daily pageviews per visitor across all vertices in the graph.
     
     Preconditions:
@@ -167,10 +167,10 @@ def calc_global_daily_pageviews(g: clg.Webgraph) -> int:
         return 0
 
     avg = total / count
-    return round(avg)
+    return round(avg, 2)
 
 
-def calc_global_min_per_page(g: clg.Webgraph) -> int:
+def calc_global_min_per_page(g: clg.Webgraph) -> float:
     """Calculates the global average for minutes per page by using calc_min_per_page for each vertex.
     
     Preconditions:
@@ -194,10 +194,10 @@ def calc_global_min_per_page(g: clg.Webgraph) -> int:
         return 0
 
     avg = total / count
-    return round(avg)
+    return round(avg, 2)
 
 
-def calc_global_search_traffic(g: clg.Webgraph) -> int:
+def calc_global_search_traffic(g: clg.Webgraph) -> float:
     """Calculates the global average for search traffic across all vertices.
     
     Preconditions:
@@ -221,10 +221,10 @@ def calc_global_search_traffic(g: clg.Webgraph) -> int:
         return 0
 
     avg = total / count
-    return round(avg)
+    return round(avg, 2)
 
 
-def calc_global_site_links(g: clg.Webgraph) -> int:
+def calc_global_site_links(g: clg.Webgraph) -> float:
     """Calculates the global average for the total number of sites linking in across all vertices.
     
     Preconditions:
@@ -248,10 +248,10 @@ def calc_global_site_links(g: clg.Webgraph) -> int:
         return 0
 
     avg = total / count
-    return round(avg)
+    return round(avg, 2)
 
 
-def calc_global_links_traffic(g: clg.Webgraph) -> int:
+def calc_global_links_traffic(g: clg.Webgraph) -> float:
     """Calculates the global average for links traffic across all vertices.
     
     Preconditions:
@@ -275,10 +275,10 @@ def calc_global_links_traffic(g: clg.Webgraph) -> int:
         return 0
 
     avg = total / count
-    return round(avg)
+    return round(avg, 2)
 
 
-def calc_global_engagement_rating(g: clg.Webgraph) -> int:
+def calc_global_engagement_rating(g: clg.Webgraph) -> float:
     """
     Calculates the global average engagement rating across all vertices in the graph.
     
@@ -303,7 +303,7 @@ def calc_global_engagement_rating(g: clg.Webgraph) -> int:
         return 0
 
     avg = total / count
-    return round(avg)
+    return round(avg, 2)
 
 
 def predict_rank(g: clg.Webgraph, site: str) -> int:
