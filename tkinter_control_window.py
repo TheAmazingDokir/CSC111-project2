@@ -15,7 +15,8 @@ Usage by CSC111 teaching team permitted.
 """
 import tkinter as tk
 from tkinter import ttk
-import matplotlibimport visual
+import matplotlib
+import visual
 
 import requests as re
 from bs4 import BeautifulSoup as bs
@@ -50,18 +51,18 @@ def launch_control_panel(g3: cg.Webgraph, nvertices: int) -> None:
 
 def _refresh(g1: cg.Webgraph, url: str) -> None:
     """Add the url's website into the graph and refresh the page"""
-    print(_search_data_for_links(g, url))
-    visual.launch_web_graph(g, 1000)
+    print(_search_data_for_links(g1, url))
+    visual.launch_web_graph(g1, 10000)
     
 
-def _search_data_for_links(g: cg.Webgraph, URL: str) -> tuple[list[str], list[str]]:
+def _search_data_for_links(g2: cg.Webgraph, URL: str) -> tuple[list[str], list[str]]:
     """Search other websites for links towards the input website, 
     and scrape input website for links to websites in the graph.
     Return as a tuple in respective order.
     """
     connected_websites = []
     for domain in [website.domain_name for website in g2.get_vertices()]:
-        if url in _scrape_website(domain):
+        if domain in _scrape_website(domain):
             connected_websites.append(domain)
     return connected_websites
 
@@ -90,32 +91,6 @@ def _scrape_website(url1: str) -> list[str]:
 
     return domain_names
 
-
-g = cg.Webgraph()
-
-    launch_control_panel(g)
-
-    # g.add_vertex("maps.google.ca")
-
-    # print(scrape_website(g, "https://google.com"))
-
-g.add_vertex(item="google.com")
-g.add_vertex(item="maps.google.com")
-g.add_vertex(item="maps.google.ca")
-
-    # u = g.get_vertices[0]
-    # sum = 0
-
-    # for v in g._vertices:
-    #     if v == u: continue
-    
-    #     path = g.directed_connected(v, u)
-    
-    #     if path is not None:
-    #         sum += sum([(stats.calc_engagement_rating(g._vertices[path[i]])*
-    #                      ))])
-
-
 if __name__ == '__main__':
     # import doctest
     # doctest.testmod()
@@ -127,3 +102,16 @@ if __name__ == '__main__':
         'allowed-io': ['_refresh', 'load_vertex_mappings', 'load_website_stats', 'load_edges'],
         'max-line-length': 120
     })
+    
+    
+    # u = g.get_vertices[0]
+    # sum = 0
+
+    # for v in g._vertices:
+    #     if v == u: continue
+    
+    #     path = g.directed_connected(v, u)
+    
+    #     if path is not None:
+    #         sum += sum([(stats.calc_engagement_rating(g._vertices[path[i]])*
+    #                      ))])
