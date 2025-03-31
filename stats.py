@@ -241,9 +241,15 @@ def percentify(value: int, key: callable, g: clg.Webgraph) -> int:
 
 def calc_global_daily_min(g: clg.Webgraph) -> float:
     """Calculates the global average for daily minutes on site across all vertices in the graph.
-
+    
     Preconditions:
         - Each vertex in g.vertices has 'daily_min' in its stats.
+    
+    >>> g = clg.Webgraph()
+    >>> g.add_vertex('site1', {'daily_min': 10})
+    >>> g.add_vertex('site2', {'daily_min': 20})
+    >>> calc_global_daily_min(g)
+    15.0
     """
     vertices = g.get_vertices()
     count = 0
@@ -262,8 +268,15 @@ def calc_global_daily_min(g: clg.Webgraph) -> float:
 
 def calc_global_daily_pageviews(g: clg.Webgraph) -> float:
     """Calculates the global average for daily pageviews per visitor across all vertices in the graph.
+    
     Preconditions:
-        - Each vertex in g._vertices has 'daily_pageviews' in its stats.
+        - Each vertex in g.vertices has 'daily_pageviews' in its stats.
+    
+    >>> g = clg.Webgraph()
+    >>> g.add_vertex('site1', {'daily_pageviews': 100})
+    >>> g.add_vertex('site2', {'daily_pageviews': 200})
+    >>> calc_global_daily_pageviews(g)
+    150.0
     """
     vertices = g.get_vertices()
     count = 0
@@ -282,9 +295,15 @@ def calc_global_daily_pageviews(g: clg.Webgraph) -> float:
 
 def calc_global_min_per_page(g: clg.Webgraph) -> float:
     """Calculates the global average for minutes per page by using calc_min_per_page for each vertex.
-
+    
     Preconditions:
         - Each vertex has 'daily_min' and 'daily_pageviews' in its stats and daily_pageviews > 0.
+    
+    >>> g = clg.Webgraph()
+    >>> g.add_vertex('site1', {'daily_min': 10, 'daily_pageviews': 5})
+    >>> g.add_vertex('site2', {'daily_min': 20, 'daily_pageviews': 10})
+    >>> calc_global_min_per_page(g)
+    2.0
     """
     vertices = g.get_vertices()
     count = 0
@@ -303,9 +322,15 @@ def calc_global_min_per_page(g: clg.Webgraph) -> float:
 
 def calc_global_search_traffic(g: clg.Webgraph) -> float:
     """Calculates the global average for search traffic across all vertices.
-
+    
     Preconditions:
         - Each vertex has 'daily_min' and 'traffic_ratio' in its stats.
+    
+    >>> g = clg.Webgraph()
+    >>> g.add_vertex('site1', {'daily_min': 10, 'traffic_ratio': 0.5})
+    >>> g.add_vertex('site2', {'daily_min': 20, 'traffic_ratio': 0.3})
+    >>> calc_global_search_traffic(g)
+    40.0
     """
     vertices = g.get_vertices()
     count = 0
@@ -324,9 +349,15 @@ def calc_global_search_traffic(g: clg.Webgraph) -> float:
 
 def calc_global_site_links(g: clg.Webgraph) -> float:
     """Calculates the global average for the total number of sites linking in across all vertices.
-
+    
     Preconditions:
         - Each vertex in g.vertices has 'site_links' in its stats.
+    
+    >>> g = clg.Webgraph()
+    >>> g.add_vertex('site1', {'site_links': 10})
+    >>> g.add_vertex('site2', {'site_links': 20})
+    >>> calc_global_site_links(g)
+    15.0
     """
     vertices = g.get_vertices()
     count = 0
@@ -345,9 +376,15 @@ def calc_global_site_links(g: clg.Webgraph) -> float:
 
 def calc_global_links_traffic(g: clg.Webgraph) -> float:
     """Calculates the global average for links traffic across all vertices.
-
+    
     Preconditions:
         - Each vertex has 'daily_pageviews' and 'site_links' in its stats.
+    
+    >>> g = clg.Webgraph()
+    >>> g.add_vertex('site1', {'daily_pageviews': 100, 'site_links': 10})
+    >>> g.add_vertex('site2', {'daily_pageviews': 200, 'site_links': 20})
+    >>> calc_global_links_traffic(g)
+    9.09
     """
     vertices = g.get_vertices()
     count = 0
@@ -367,9 +404,15 @@ def calc_global_links_traffic(g: clg.Webgraph) -> float:
 def calc_global_engagement_rating(g: clg.Webgraph) -> float:
     """
     Calculates the global average engagement rating across all vertices in the graph.
-
+    
     Preconditions:
         - Each vertex in g.vertices has the required stats to compute engagement rating.
+    
+    >>> g = clg.Webgraph()
+    >>> g.add_vertex('site1', {'daily_min': 10, 'daily_pageviews': 5, 'traffic_ratio': 0.5, 'site_links': 10})
+    >>> g.add_vertex('site2', {'daily_min': 20, 'daily_pageviews': 10, 'traffic_ratio': 0.3, 'site_links': 15})
+    >>> print(calc_global_engagement_rating(g))
+    94.35
     """
     vertices = g.get_vertices()
     count = 0
@@ -388,13 +431,16 @@ def calc_global_engagement_rating(g: clg.Webgraph) -> float:
 
 def predict_rank(g: clg.Webgraph, site: str) -> int:
     """Return the rank (index) of the specified vertex based on its engagement rating in the graph.
-
+    
     Preconditions:
         - `g.vertices` must contain valid vertices with the required stats for engagement rating calculation.
         - `site` must be a valid key in `g.vertices`.
-
-        - `g._vertices` must contain valid vertices with the required stats for engagement rating calculation.
-        - `site` must be a valid key in `g._vertices`.
+    
+    >>> g = clg.Webgraph()
+    >>> g.add_vertex('web1', {'daily_min': 10, 'daily_pageviews': 5, 'traffic_ratio': 0.5, 'site_links': 10})
+    >>> g.add_vertex('web2', {'daily_min': 20, 'daily_pageviews': 10, 'traffic_ratio': 0.3, 'site_links': 15})
+    >>> predict_rank(g, 'web1')
+    1
     """
     # Calculate engagement ratings for all vertices
     engagement_ratings = []
@@ -449,7 +495,7 @@ if __name__ == '__main__':
 
     import python_ta
     python_ta.check_all(config={
-        'extra-imports': ["numpy", "math", "class_graph"],  # the names (strs) of imported modules
+        'extra-imports': ["numpy", "class_graph", "networkx"],  # the names (strs) of imported modules
         'allowed-io': [],  # the names (strs) of functions that call print/open/input
         'max-line-length': 120
     })
