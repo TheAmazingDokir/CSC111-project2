@@ -6,3 +6,4 @@ python-ta
 requests
 beautifulsoup4
 tkinter
+pandas
