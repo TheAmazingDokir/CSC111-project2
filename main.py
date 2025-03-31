@@ -33,7 +33,7 @@ EDGES_FILE = "data/edges.txt"
 WEBSITE_STATS_FILE = "data/website_stats.csv"
 
 # Load the data
-webgraph = load_graph(VERTICES_FILE, EDGES_FILE, WEBSITE_STATS_FILE, load_with_stats_only=True)
+webgraph = load_graph(VERTICES_FILE, EDGES_FILE, WEBSITE_STATS_FILE, True, 300)
 
 # # Cull google.*
 # for v in webgraph.get_vertices():
