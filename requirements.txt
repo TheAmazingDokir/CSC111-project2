@@ -1,6 +1,6 @@
-
-
-A requirements.txt file that lists every external library your program relies on, such as python_ta, pygame, numpy, etc.
-
-
-Note: do not list built-in libraries that come with Python, like doctest, math, or random. Only include ones that need to be installed separately. If you can’t remember whether a module comes included with Python, look in the PyCharm settings window where you install new libraries (Project: csc111 -> Python Interpreter). If you see the library listed in the table, it’s external to Python and should be included in your requirements.txt file. 
+networkx
+numpy
+matplotlib
+plotly
+python-ta
+tkinter
