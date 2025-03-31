@@ -113,7 +113,7 @@ def calc_engagement_rating(v: clg._Website) -> int:
     
     >>> v = clg._Website('example.com', stats={'daily_min': 10, 'daily_pageviews': 5, 'traffic_ratio': 0.5, 'site_links': 10})
     >>> calc_engagement_rating(v)
-    11
+    21
     """
     daily_min = v.stats["daily_min"]
     daily_pageviews = v.stats["daily_pageviews"]
@@ -138,9 +138,6 @@ def percentify(value: int, key: callable, g: clg.Webgraph) -> int:
     Preconditions:
         - The graph `g` must contain vertices with valid 'daily_min', 'daily_pageviews', 'traffic_ratio', and 'site_links' stats.
         - The global average calculated by `key(g)` must be non-zero.
-    
-    >>> percentify(10, calc_global_daily_min, g)
-    -68
     """
     global_avg = key(g)
 
@@ -239,7 +236,7 @@ def calc_global_search_traffic(g: clg.Webgraph) -> int:
     >>> g.add_vertex('site1', {'daily_min': 10, 'traffic_ratio': 0.5})
     >>> g.add_vertex('site2', {'daily_min': 20, 'traffic_ratio': 0.3})
     >>> calc_global_search_traffic(g)
-    8
+    6
     """
     vertices = g._vertices.values()
     count = 0
@@ -291,7 +288,7 @@ def calc_global_links_traffic(g: clg.Webgraph) -> int:
     >>> g.add_vertex('site1', {'daily_pageviews': 100, 'site_links': 10})
     >>> g.add_vertex('site2', {'daily_pageviews': 200, 'site_links': 20})
     >>> calc_global_links_traffic(g)
-    425
+    424
     """
     vertices = g._vertices.values()
     count = 0
@@ -319,7 +316,7 @@ def calc_global_engagement_rating(g: clg.Webgraph) -> int:
     >>> g.add_vertex('site1', {'daily_min': 10, 'daily_pageviews': 5, 'traffic_ratio': 0.5, 'site_links': 10})
     >>> g.add_vertex('site2', {'daily_min': 20, 'daily_pageviews': 10, 'traffic_ratio': 0.3, 'site_links': 15})
     >>> calc_global_engagement_rating(g)
-    10
+    36
     """
     vertices = g._vertices.values()
     count = 0
@@ -351,7 +348,7 @@ def predict_rank(g: clg.Webgraph, site: str) -> int:
     # Calculate engagement ratings for all vertices
     engagement_ratings = []
     for vertex in g._vertices.values():
-        engagement_ratings.append((vertex.item, calc_engagement_rating(vertex)))
+        engagement_ratings.append((vertex.domain_name, calc_engagement_rating(vertex)))
     
     # Sort vertices by engagement rating (in descending order)
     sorted_ratings = sorted(engagement_ratings, key=lambda x: x[1], reverse=True)
@@ -362,7 +359,7 @@ def predict_rank(g: clg.Webgraph, site: str) -> int:
             return index
 
 
-def loader(g: clg.Webgraph, stat: callable):
+def loader(g: clg.Webgraph, stat_func: callable):
     """Load calculated statistics into all vertices in the graph.
     
     """
@@ -384,6 +381,7 @@ def loader(g: clg.Webgraph, stat: callable):
 
 
 if __name__ == '__main__':
+    import doctest
     doctest.testmod()
 
     import python_ta

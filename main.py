@@ -23,11 +23,11 @@ global_engagement_rating = stats.calc_global_engagement_rating(webgraph)
 
 
 # Updating vertices with individual stats
-stats.loader(g, calc_min_per_page)
-stats.loader(g, calc_search_traffic)
-stats.loader(g, calc_links_traffic)
-stats.loader(g, calc_engagement_rating)
-stats.loader(g, predict_rank)
+stats.loader(webgraph, stats.calc_min_per_page)
+stats.loader(webgraph, stats.calc_search_traffic)
+stats.loader(webgraph, stats.calc_links_traffic)
+stats.loader(webgraph, stats.calc_engagement_rating)
+stats.loader(webgraph, stats.predict_rank)
 
 
 # RENDER AND DISPLAY GRAPH
