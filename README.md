@@ -1,5 +1,4 @@
-* CSC111 Project Report:
-Linking to Success: How Backlinks Affect SEO Performance of Websites *
+** CSC111 Project Report: Linking to Success: How Backlinks Affect SEO Performance of Websites **
 
 One of the challenges that website owners face is ranking high in search results. There are two main ways to raise
 website recognition: through paid ads and through optimization of the website for search engines. The second ap-
